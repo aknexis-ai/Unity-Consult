@@ -1,0 +1,70 @@
+# Unity Consult Project Requirements
+#
+# This is not a Python dependency file. The project is a Node.js monorepo, so
+# install code dependencies with `npm install` from package.json/package-lock.json.
+# This file exists as a human-readable handoff checklist for team leaders.
+
+Runtime:
+- Node.js 20 or newer
+- npm 10 or newer
+- Windows PowerShell 5+ or PowerShell 7+ for Windows Atlas DNS fallback
+
+Install Command:
+- npm install
+
+Development Commands:
+- npm run dev
+- npm run backend:dev
+- npm run frontend:dev
+
+Production Commands:
+- npm run build
+- npm start
+
+Verification Commands:
+- npm run verify
+- npm run backend:providers
+- npm run backend:seed
+- npm run smoke:api
+
+Current Verified Snapshot:
+- Frontend production build generates 60 routes
+- Live API smoke test passes 31 checks
+- Mobile responsive audit covers public, admin, and portal routes at 390px width
+
+Required Backend Environment:
+- backend/.env copied from backend/.env.example
+- MONGODB_URI
+- JWT_ACCESS_SECRET
+- JWT_REFRESH_SECRET
+
+Required Frontend Environment:
+- frontend/.env copied from frontend/.env.example
+- NEXT_PUBLIC_API_URL
+- NEXT_PUBLIC_SOCKET_URL
+
+Provider Keys Required For Full Live Production:
+- REDIS_URL
+- RAZORPAY_KEY_ID
+- RAZORPAY_KEY_SECRET
+- RAZORPAY_WEBHOOK_SECRET
+- RESEND_API_KEY
+- TWILIO_ACCOUNT_SID
+- TWILIO_AUTH_TOKEN
+- TWILIO_WHATSAPP_FROM
+- NEXT_PUBLIC_RAZORPAY_KEY_ID
+
+External Accounts Needed:
+- MongoDB Atlas
+- Redis/Upstash
+- Razorpay
+- Resend
+- Twilio WhatsApp
+- Domain/DNS provider
+- Hosting provider for frontend and backend
+
+Important:
+- Do not commit backend/.env or frontend/.env.
+- Commit only backend/.env.example and frontend/.env.example.
+- Run npm run verify and npm run smoke:api before handoff.
+- Add Redis/Razorpay/Resend/Twilio keys before final live provider testing.

@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Frontend lint
+        run: npm run frontend:lint
+
+      - name: Frontend build
+        run: npm run frontend:build
+
+      - name: Backend lint
+        run: npm run backend:lint
+
+      - name: Backend typecheck
+        run: npm run backend:typecheck
+        env:
+          MONGODB_URI: mongodb+srv://ci-user:ci-pass@cluster0.example.mongodb.net/unity-consult
+          JWT_ACCESS_SECRET: ci-access-secret
+          JWT_REFRESH_SECRET: ci-refresh-secret
+
+      - name: Backend unit tests
+        run: npm run backend:test
+        env:
+          MONGODB_URI: mongodb+srv://ci-user:ci-pass@cluster0.example.mongodb.net/unity-consult
+          JWT_ACCESS_SECRET: ci-access-secret
+          JWT_REFRESH_SECRET: ci-refresh-secret
+
+      - name: Backend e2e tests
+        run: npm run backend:test:e2e
+        env:
+          MONGODB_URI: mongodb+srv://ci-user:ci-pass@cluster0.example.mongodb.net/unity-consult
+          JWT_ACCESS_SECRET: ci-access-secret
+          JWT_REFRESH_SECRET: ci-refresh-secret
+
+      - name: Backend build
+        run: npm run backend:build
+        env:
+          MONGODB_URI: mongodb+srv://ci-user:ci-pass@cluster0.example.mongodb.net/unity-consult
+          JWT_ACCESS_SECRET: ci-access-secret
+          JWT_REFRESH_SECRET: ci-refresh-secret
