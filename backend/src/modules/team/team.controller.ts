@@ -9,7 +9,7 @@ import { TeamService } from "./team.service";
 
 @Controller("team")
 @UseGuards(JwtAccessGuard, RolesGuard)
-@Roles(UserRole.Admin, UserRole.Staff)
+@Roles(UserRole.Admin, UserRole.Staff, UserRole.Hr)
 export class TeamController {
   constructor(private readonly teamService: TeamService) {}
 

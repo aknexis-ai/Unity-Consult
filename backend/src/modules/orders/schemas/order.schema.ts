@@ -3,6 +3,19 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
 export type OrderDocument = HydratedDocument<Order>;
 
+export enum OrderLifecycleStatus {
+  Inquiry = "inquiry",
+  QuoteSent = "quote_sent",
+  BookingConfirmed = "booking_confirmed",
+  AdvancePaid = "advance_paid",
+  InProgress = "in_progress",
+  UnderReview = "under_review",
+  RevisionRequested = "revision_requested",
+  Completed = "completed",
+  Cancelled = "cancelled",
+  Archived = "archived",
+}
+
 @Schema({
   timestamps: true,
   versionKey: false,
@@ -29,17 +42,30 @@ export class Order {
   @Prop({ trim: true, default: "INR" })
   currency!: string;
 
-  @Prop({ trim: true, default: "discovery" })
+  @Prop({ trim: true, default: OrderLifecycleStatus.Inquiry })
   stage!: string;
 
   @Prop({ type: String, trim: true, default: null })
   owner?: string | null;
 
-  @Prop({ trim: true, default: "active" })
+  @Prop({ enum: OrderLifecycleStatus, default: OrderLifecycleStatus.Inquiry })
   status!: string;
 
   @Prop({ type: String, trim: true, default: "pending" })
   paymentStatus!: string;
+
+  @Prop({ type: String, trim: true, default: "advance_payment" })
+  paymentMode!: string;
+
+  @Prop({ type: [Object], default: [] })
+  paymentMilestones!: Array<{
+    milestone_number: number;
+    description: string;
+    amount: number;
+    due_date: Date;
+    status: string;
+    paid_at?: Date | null;
+  }>;
 
   @Prop({ type: String, trim: true, default: null })
   notes?: string | null;

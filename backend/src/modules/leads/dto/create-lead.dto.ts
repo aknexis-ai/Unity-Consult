@@ -32,4 +32,21 @@ export class CreateLeadDto {
   @IsOptional()
   @IsString()
   budget?: string;
+
+  @IsOptional()
+  @IsString()
+  budgetRange?: string;
+
+  @IsOptional()
+  @IsString()
+  inquiryType?: string;
+
+  @IsOptional()
+  @IsString()
+  serviceInterest?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
+  message?: string;
 }

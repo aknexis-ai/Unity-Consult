@@ -16,7 +16,7 @@ type GraphqlRequest = {
 
 @Controller("graphql")
 @UseGuards(JwtAccessGuard, RolesGuard)
-@Roles(UserRole.Admin, UserRole.Staff)
+@Roles(UserRole.Admin, UserRole.Staff, UserRole.Finance, UserRole.CrmOps, UserRole.Operations, UserRole.Content, UserRole.Seo)
 export class GraphqlController {
   constructor(
     private readonly analyticsService: AnalyticsService,

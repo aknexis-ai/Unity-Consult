@@ -4,7 +4,16 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 export type UserDocument = HydratedDocument<User>;
 
 export enum UserRole {
+  SuperAdmin = "super_admin",
   Admin = "admin",
+  Finance = "finance",
+  Support = "support",
+  Seo = "seo",
+  Design = "design",
+  Content = "content",
+  Hr = "hr",
+  Operations = "operations",
+  CrmOps = "crm_ops",
   Client = "client",
   Staff = "staff",
 }
@@ -58,6 +67,9 @@ export class User {
 
   @Prop({ default: true })
   isActive!: boolean;
+
+  @Prop({ type: [String], default: [] })
+  permissions?: string[];
 
   @Prop({ type: Date, default: null })
   lastLoginAt?: Date | null;

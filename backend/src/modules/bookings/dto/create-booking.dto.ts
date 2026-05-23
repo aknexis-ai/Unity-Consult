@@ -1,4 +1,4 @@
-import { IsEmail, IsNumber, IsObject, IsOptional, IsString, Min } from "class-validator";
+import { IsEmail, IsIn, IsNumber, IsObject, IsOptional, IsString, Min } from "class-validator";
 
 export class CreateBookingDto {
   @IsString()
@@ -23,6 +23,10 @@ export class CreateBookingDto {
   @IsNumber()
   @Min(0)
   amount?: number;
+
+  @IsOptional()
+  @IsIn(["full_payment", "advance_payment", "milestone_billing", "recurring_billing"])
+  paymentMode?: "full_payment" | "advance_payment" | "milestone_billing" | "recurring_billing";
 
   @IsString()
   projectBrief!: string;

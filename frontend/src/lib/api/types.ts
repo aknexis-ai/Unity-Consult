@@ -6,7 +6,20 @@ export type ApiUser = {
   company?: string | null;
   title?: string | null;
   avatarUrl?: string | null;
-  role: "admin" | "staff" | "client";
+  role:
+    | "super_admin"
+    | "admin"
+    | "finance"
+    | "support"
+    | "seo"
+    | "design"
+    | "content"
+    | "hr"
+    | "operations"
+    | "crm_ops"
+    | "staff"
+    | "client";
+  permissions: string[];
   emailVerified?: boolean;
   isActive: boolean;
   lastLoginAt?: string | null;
@@ -23,6 +36,10 @@ export type Lead = {
   stage: "new" | "qualified" | "proposal" | "won";
   source?: string | null;
   budget?: string | null;
+  budgetRange?: string | null;
+  inquiryType?: string | null;
+  message?: string | null;
+  serviceInterest?: string | null;
 };
 
 export type Project = {
@@ -44,6 +61,8 @@ export type Order = {
   stage: string;
   owner?: string | null;
   status: string;
+  paymentMode?: string | null;
+  paymentStatus?: string | null;
 };
 
 export type Invoice = {
@@ -106,6 +125,8 @@ export type ContentItem = {
   type: string;
   status: string;
   summary?: string | null;
+  imageId?: string | null;
+  imageUrl?: string | null;
 };
 
 export type Metric = {
@@ -128,6 +149,16 @@ export type ServiceCatalogItem = {
   bookingFields: string[];
   related: string[];
   status: string;
+  accent?: string;
+  proofMetric?: string;
+  proofLabel?: string;
+  pricingTiers?: Array<Record<string, unknown>>;
+  addons?: Array<Record<string, unknown>>;
+  deliverables?: string[];
+  faqs?: Array<Record<string, unknown>>;
+  intakeSchema?: Array<Record<string, unknown>>;
+  media?: Record<string, unknown>;
+  seo?: Record<string, unknown>;
 };
 
 export type BookingResult = {
@@ -135,6 +166,7 @@ export type BookingResult = {
   order: Order;
   project: Project;
   invoice: Invoice;
+  invoices?: Invoice[];
   nextAction: "payment";
 };
 

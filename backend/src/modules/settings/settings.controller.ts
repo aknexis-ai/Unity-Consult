@@ -10,7 +10,7 @@ import { SettingsService } from "./settings.service";
 
 @Controller("settings")
 @UseGuards(JwtAccessGuard, RolesGuard)
-@Roles(UserRole.Admin, UserRole.Staff, UserRole.Client)
+@Roles(UserRole.Admin, UserRole.Staff, UserRole.Finance, UserRole.Support, UserRole.Seo, UserRole.Design, UserRole.Content, UserRole.Hr, UserRole.Operations, UserRole.CrmOps, UserRole.Client)
 export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}
 

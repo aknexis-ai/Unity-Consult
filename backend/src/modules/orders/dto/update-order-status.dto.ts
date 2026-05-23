@@ -1,4 +1,6 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsEnum, IsOptional, IsString } from "class-validator";
+
+import { OrderLifecycleStatus } from "../schemas/order.schema";
 
 export class UpdateOrderStatusDto {
   @IsOptional()
@@ -6,8 +8,8 @@ export class UpdateOrderStatusDto {
   stage?: string;
 
   @IsOptional()
-  @IsString()
-  status?: string;
+  @IsEnum(OrderLifecycleStatus)
+  status?: OrderLifecycleStatus;
 
   @IsOptional()
   @IsString()

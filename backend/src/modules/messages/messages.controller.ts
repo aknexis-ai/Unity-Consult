@@ -9,7 +9,7 @@ import { MessagesService } from "./messages.service";
 
 @Controller("messages")
 @UseGuards(JwtAccessGuard, RolesGuard)
-@Roles(UserRole.Admin, UserRole.Staff, UserRole.Client)
+@Roles(UserRole.Admin, UserRole.Staff, UserRole.Support, UserRole.CrmOps, UserRole.Operations, UserRole.Client)
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 

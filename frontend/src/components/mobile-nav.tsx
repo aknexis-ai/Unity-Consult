@@ -2,9 +2,16 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 
+function isActive(href: string, pathname: string): boolean {
+  if (href === "/") return pathname === "/";
+  return pathname.startsWith(href);
+}
+
 export default function MobileNav({ links }: { links: { href: string; label: string }[] }) {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
   return (
@@ -20,7 +27,12 @@ export default function MobileNav({ links }: { links: { href: string; label: str
       <div className={`mobile-menu ${open ? "open" : ""}`} role="dialog" aria-hidden={!open}>
         <nav>
           {links.map((l) => (
-            <Link key={l.href} href={l.href} onClick={() => setOpen(false)}>
+            <Link
+              key={l.href}
+              href={l.href}
+              className={`mobile-nav-link${isActive(l.href, pathname) ? " active" : ""}`}
+              onClick={() => setOpen(false)}
+            >
               {l.label}
             </Link>
           ))}

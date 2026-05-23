@@ -21,21 +21,21 @@ export class TicketsController {
 
   @Get()
   @UseGuards(JwtAccessGuard, RolesGuard)
-  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Client)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Support, UserRole.Client)
   findAll() {
     return this.ticketsService.findAll();
   }
 
   @Get(":id")
   @UseGuards(JwtAccessGuard, RolesGuard)
-  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Client)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Support, UserRole.Client)
   findOne(@Param("id") id: string) {
     return this.ticketsService.findOne(id);
   }
 
   @Patch(":id/status")
   @UseGuards(JwtAccessGuard, RolesGuard)
-  @Roles(UserRole.Admin, UserRole.Staff)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Support)
   updateStatus(@Param("id") id: string, @Body() body: UpdateTicketStatusDto) {
     return this.ticketsService.updateStatus(id, body);
   }

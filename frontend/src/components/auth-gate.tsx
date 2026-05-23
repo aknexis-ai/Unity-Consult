@@ -5,13 +5,13 @@ import { ReactNode, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { authApi } from "@/lib/api/resources";
-import { useAuthStore } from "@/lib/stores/auth-store";
+import { AuthRole, useAuthStore } from "@/lib/stores/auth-store";
 
 export function AuthGate({
   roles,
   children,
 }: {
-  roles: Array<"admin" | "staff" | "client">;
+  roles: AuthRole[];
   children: ReactNode;
 }) {
   const setSession = useAuthStore((state) => state.setSession);
@@ -19,10 +19,10 @@ export function AuthGate({
   const storedUser = useAuthStore((state) => state.user);
   const [isMounted, setIsMounted] = useState(false);
   const query = useQuery({
-    queryKey: ["auth", "me"],
+    queryKey: ["auth", "me", accessToken],
     queryFn: authApi.me,
     retry: false,
-    enabled: isMounted,
+    enabled: isMounted && !!accessToken,
   });
 
   useEffect(() => {
@@ -41,17 +41,34 @@ export function AuthGate({
     }
   }, [query.error]);
 
-  const user = query.data ?? storedUser;
-  const isBootstrappingSession = !isMounted || query.isLoading;
+  const user = query.error ? null : (query.data ?? storedUser);
+  const isBootstrappingSession = !isMounted || (!!accessToken && query.isLoading);
 
   if (isBootstrappingSession) {
     return <div className="auth-state">Checking your session...</div>;
   }
 
-  if (query.error && !user) {
+  if ((query.error || (isMounted && !accessToken)) && !user) {
     return (
       <div className="auth-state">
         <div className="portal-gate-wrapper container stack-lg">
+          <Link href="/" className="auth-back-link" style={{ position: "absolute", top: "1.5rem", left: "1.5rem", zIndex: 10 }}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M19 12H5" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
+            Back to Home
+          </Link>
           <div className="auth-panel-heading">
             <div className="error-icon">
               <svg
@@ -211,7 +228,9 @@ export function AuthGate({
     );
   }
 
-  if (!roles.includes(user.role)) {
+  const isSuperAdmin = user.role === "super_admin";
+
+  if (!isSuperAdmin && !roles.includes(user.role)) {
     return (
       <div className="auth-state">
         <h2>Access restricted</h2>

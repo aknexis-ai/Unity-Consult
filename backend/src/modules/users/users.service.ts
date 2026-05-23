@@ -161,6 +161,20 @@ export class UsersService {
     return this.userModel.findByIdAndUpdate(userId, { lastLoginAt: new Date() }, { returnDocument: "after" }).exec();
   }
 
+  async updatePermissions(userId: string, permissions: string[]) {
+    const user = await this.userModel.findByIdAndUpdate(
+      userId,
+      { permissions },
+      { returnDocument: "after" },
+    ).exec();
+
+    if (!user) {
+      throw new NotFoundException("User not found.");
+    }
+
+    return this.serializeUser(user);
+  }
+
   serializeUser(user: UserDocument) {
     return {
       id: user.id,
@@ -171,6 +185,7 @@ export class UsersService {
       title: user.title ?? null,
       avatarUrl: user.avatarUrl ?? null,
       role: user.role,
+      permissions: user.permissions ?? [],
       emailVerified: user.emailVerified,
       isActive: user.isActive,
       lastLoginAt: user.lastLoginAt ?? null,

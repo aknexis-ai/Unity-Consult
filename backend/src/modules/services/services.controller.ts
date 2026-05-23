@@ -24,21 +24,21 @@ export class ServicesController {
 
   @Post()
   @UseGuards(JwtAccessGuard, RolesGuard)
-  @Roles(UserRole.Admin, UserRole.Staff)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Content, UserRole.Seo, UserRole.Design, UserRole.CrmOps)
   create(@Body() body: CreateServiceCatalogDto) {
     return this.servicesService.create(body);
   }
 
   @Patch(":slug")
   @UseGuards(JwtAccessGuard, RolesGuard)
-  @Roles(UserRole.Admin, UserRole.Staff)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Content, UserRole.Seo, UserRole.Design, UserRole.CrmOps)
   update(@Param("slug") slug: string, @Body() body: UpdateServiceCatalogDto) {
     return this.servicesService.update(slug, body);
   }
 
   @Delete(":slug")
   @UseGuards(JwtAccessGuard, RolesGuard)
-  @Roles(UserRole.Admin)
+  @Roles(UserRole.Admin, UserRole.Content, UserRole.Design)
   remove(@Param("slug") slug: string) {
     return this.servicesService.remove(slug);
   }

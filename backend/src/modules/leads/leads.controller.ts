@@ -22,21 +22,21 @@ export class LeadsController {
 
   @Get()
   @UseGuards(JwtAccessGuard, RolesGuard)
-  @Roles(UserRole.Admin, UserRole.Staff)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.CrmOps, UserRole.Operations)
   findAll() {
     return this.leadsService.findAll();
   }
 
   @Get(":id")
   @UseGuards(JwtAccessGuard, RolesGuard)
-  @Roles(UserRole.Admin, UserRole.Staff)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.CrmOps, UserRole.Operations)
   findOne(@Param("id") id: string) {
     return this.leadsService.findOne(id);
   }
 
   @Patch(":id/stage")
   @UseGuards(JwtAccessGuard, RolesGuard)
-  @Roles(UserRole.Admin, UserRole.Staff)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.CrmOps, UserRole.Operations)
   updateStage(
     @Param("id") id: string,
     @Body() body: UpdateLeadStageDto,

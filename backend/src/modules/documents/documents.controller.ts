@@ -15,36 +15,36 @@ export class DocumentsController {
   constructor(private readonly documentsService: DocumentsService) {}
 
   @Post()
-  @Roles(UserRole.Admin, UserRole.Staff)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Operations, UserRole.CrmOps)
   create(@Body() body: CreateDocumentDto) {
     return this.documentsService.create(body);
   }
 
   @Post("upload")
-  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Client)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Operations, UserRole.CrmOps, UserRole.Client)
   upload(@Body() body: UploadDocumentDto) {
     return this.documentsService.upload(body);
   }
 
   @Get()
-  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Client)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Operations, UserRole.CrmOps, UserRole.Client)
   findAll() {
     return this.documentsService.findAll();
   }
 
   @Get(":id")
-  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Client)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Operations, UserRole.CrmOps, UserRole.Client)
   findOne(@Param("id") id: string) {
     return this.documentsService.findOne(id);
   }
 
-  @Get(":filename/download")
-  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Client)
-  async download(@Param("filename") filename: string, @Res() reply: FastifyReply) {
-    const { document, stream } = await this.documentsService.createDownloadStream(filename);
+  @Get(":id/download")
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Operations, UserRole.CrmOps, UserRole.Client)
+  async download(@Param("id") id: string, @Res() reply: FastifyReply) {
+    const { document, stream } = await this.documentsService.createDownloadStream(id);
 
     reply.header("content-type", document.mimeType ?? "application/octet-stream");
-    reply.header("content-disposition", `attachment; filename="${document.name}"`);
+    reply.header("content-disposition", `inline; filename="${document.name}"`);
 
     return reply.send(stream);
   }

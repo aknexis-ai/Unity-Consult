@@ -4,11 +4,12 @@ import axios from "axios";
 
 import { useAuthStore } from "../stores/auth-store";
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:4000/api/v1";
+const baseURL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1";
 
 export const apiClient = axios.create({
   baseURL,
   withCredentials: true,
+  timeout: 15_000,
 });
 
 const unsafeMethods = new Set(["post", "put", "patch", "delete"]);
@@ -54,7 +55,13 @@ apiClient.interceptors.request.use(async (config) => {
   return config;
 });
 
-let refreshPromise: Promise<string | null> | null = null;
+let isRefreshing = false;
+let refreshSubscribers: Array<(token: string | null) => void> = [];
+
+function onRefreshed(token: string | null) {
+  refreshSubscribers.forEach((cb) => cb(token));
+  refreshSubscribers = [];
+}
 
 apiClient.interceptors.response.use(
   (response) => response,
@@ -67,7 +74,7 @@ apiClient.interceptors.response.use(
       );
     }
 
-    if (error.response?.status !== 401 || !originalRequest || originalRequest._retry) {
+    if (error.response?.status !== 401 || !originalRequest) {
       const message =
         typeof error.response?.data?.message === "string"
           ? error.response.data.message
@@ -77,37 +84,60 @@ apiClient.interceptors.response.use(
       return Promise.reject(new Error(message));
     }
 
+    if (originalRequest.url?.includes("/auth/refresh")) {
+      useAuthStore.getState().clearSession();
+      return Promise.reject(new Error("Your session has expired. Please login again."));
+    }
+
+    if (originalRequest._retry) {
+      return new Promise<string | null>((resolve) => {
+        refreshSubscribers.push(resolve);
+      }).then((token) => {
+        if (token) {
+          originalRequest.headers.Authorization = `Bearer ${token}`;
+          return apiClient(originalRequest);
+        }
+        return Promise.reject(new Error("Your session has expired. Please login again."));
+      });
+    }
+
     originalRequest._retry = true;
 
-    refreshPromise ??= apiClient
-      .post("/auth/refresh", {})
-      .then((response) => {
+    if (!isRefreshing) {
+      isRefreshing = true;
+
+      try {
+        const response = await apiClient.post("/auth/refresh", {});
         const accessToken = response.data?.tokens?.accessToken as string | undefined;
         const user = response.data?.user;
 
         if (accessToken && user) {
           useAuthStore.getState().setSession({ accessToken, user });
-          return accessToken;
+          onRefreshed(accessToken);
+          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+          return apiClient(originalRequest);
         }
 
         useAuthStore.getState().clearSession();
-        return null;
-      })
-      .catch(() => {
+        onRefreshed(null);
+        return Promise.reject(new Error("Your session has expired. Please login again."));
+      } catch {
         useAuthStore.getState().clearSession();
-        return null;
-      })
-      .finally(() => {
-        refreshPromise = null;
-      });
-
-    const refreshedAccessToken = await refreshPromise;
-
-    if (!refreshedAccessToken) {
-      return Promise.reject(new Error("Your session has expired. Please login again."));
+        onRefreshed(null);
+        return Promise.reject(new Error("Your session has expired. Please login again."));
+      } finally {
+        isRefreshing = false;
+      }
     }
 
-    originalRequest.headers.Authorization = `Bearer ${refreshedAccessToken}`;
-    return apiClient(originalRequest);
+    return new Promise<string | null>((resolve) => {
+      refreshSubscribers.push(resolve);
+    }).then((token) => {
+      if (token) {
+        originalRequest.headers.Authorization = `Bearer ${token}`;
+        return apiClient(originalRequest);
+      }
+      return Promise.reject(new Error("Your session has expired. Please login again."));
+    });
   },
 );

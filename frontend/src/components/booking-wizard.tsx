@@ -1,15 +1,43 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useMemo, useState } from "react";
+import Image from "next/image";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
+import { CheckCircle2, CreditCard, Layers3, Repeat2, ShieldCheck } from "lucide-react";
 import { z } from "zod";
 
 import { liveApi } from "@/lib/api/resources";
 import { services } from "@/lib/services";
 
-const steps = ["Choose service", "Business context", "Delivery needs", "Review"];
+const steps = ["Service", "Business", "Payment", "Review"];
+const paymentModes = [
+  {
+    value: "advance_payment",
+    title: "Advance payment",
+    detail: "Recommended for projects that start with a deposit and milestone balance.",
+    icon: ShieldCheck,
+  },
+  {
+    value: "full_payment",
+    title: "Full payment",
+    detail: "Best for fixed-scope launches and fast delivery packages.",
+    icon: CreditCard,
+  },
+  {
+    value: "milestone_billing",
+    title: "Milestone billing",
+    detail: "Split invoices across discovery, build, review, and release.",
+    icon: Layers3,
+  },
+  {
+    value: "recurring_billing",
+    title: "Recurring retainer",
+    detail: "Monthly billing for SEO, growth, support, and managed operations.",
+    icon: Repeat2,
+  },
+] as const;
 
 const bookingSchema = z.object({
   companyName: z.string().min(2, "Please enter the company name."),
@@ -17,6 +45,7 @@ const bookingSchema = z.object({
   contactPhone: z.string().min(7, "Please enter a valid contact phone number."),
   projectBrief: z.string().min(20, "Give a slightly more detailed project brief."),
   deliveryNotes: z.string().min(5, "Add at least a short delivery note."),
+  paymentMode: z.enum(["full_payment", "advance_payment", "milestone_billing", "recurring_billing"]),
   requestedFields: z.record(z.string(), z.string()).default({}),
 });
 
@@ -31,6 +60,7 @@ const businessContextSchema = bookingSchema.pick({
 
 const deliveryNeedsSchema = bookingSchema.pick({
   deliveryNotes: true,
+  paymentMode: true,
   requestedFields: true,
 });
 
@@ -53,6 +83,7 @@ export function BookingWizard() {
         serviceName: service.name,
         priceLabel: service.priceFrom,
         amount: parsePriceAmount(service.priceFrom),
+        paymentMode: values.paymentMode,
         projectBrief: values.projectBrief,
         deliveryNotes: values.deliveryNotes,
         requestedFields: values.requestedFields,
@@ -65,6 +96,7 @@ export function BookingWizard() {
       contactPhone: "",
       projectBrief: "",
       deliveryNotes: "",
+      paymentMode: "advance_payment",
       requestedFields: {},
     },
     mode: "onBlur",
@@ -74,6 +106,13 @@ export function BookingWizard() {
     () => services.find((item) => item.slug === serviceSlug) ?? services[0],
     [serviceSlug],
   );
+
+  useEffect(() => {
+    const selectedSlug = new URLSearchParams(window.location.search).get("service");
+    if (selectedSlug && services.some((item) => item.slug === selectedSlug)) {
+      setServiceSlug(selectedSlug);
+    }
+  }, []);
 
   const isLast = step === steps.length - 1;
 
@@ -134,18 +173,29 @@ export function BookingWizard() {
             >
               {step === 0 ? (
                 <div className="stack">
-                  <h3>Select a service</h3>
-                  <p>Each PRD-defined service has its own intake logic and workflow summary.</p>
-                  <div className="option-grid">
+                  <p className="eyebrow">Premium onboarding</p>
+                  <h3>Select the service track</h3>
+                  <p>Each PRD-defined service now carries its own visual identity, intake logic, pricing model, and delivery workflow.</p>
+                  <div className="booking-service-grid">
                     {services.map((item) => (
                       <button
                         key={item.slug}
                         type="button"
-                        className={`select-card ${item.slug === service.slug ? "selected" : ""}`}
+                        className={`booking-service-card ${item.slug === service.slug ? "selected" : ""}`}
                         onClick={() => setServiceSlug(item.slug)}
                       >
-                        <strong>{item.name}</strong>
-                        <span>{item.short}</span>
+                        <span className="service-card-check">
+                            <CheckCircle2 size={14} />
+                          </span>
+                          <div className="service-card-image">
+                            <Image src={item.media.card} alt="" fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 320px" style={{ objectFit: "cover" }} />
+                          </div>
+                          <div className="service-card-body">
+                            <span className="service-card-category">{item.category}</span>
+                            <strong className="service-card-name">{item.name}</strong>
+                            <span className="service-card-short">{item.short}</span>
+                            <span className="service-card-price">{item.priceFrom}</span>
+                          </div>
                       </button>
                     ))}
                   </div>
@@ -192,6 +242,7 @@ export function BookingWizard() {
               ) : null}
               {step === 2 ? (
                 <div className="stack">
+                  <p className="eyebrow">Scope and billing</p>
                   <h3>Delivery requirements</h3>
                   <div className="form-grid">
                     {service.bookingFields.map((field) => (
@@ -216,16 +267,38 @@ export function BookingWizard() {
                       ) : null}
                     </label>
                   </div>
+                  <div className="payment-mode-grid">
+                    {paymentModes.map((mode) => {
+                      const Icon = mode.icon;
+                      const selected = form.watch("paymentMode") === mode.value;
+
+                      return (
+                        <button
+                          key={mode.value}
+                          type="button"
+                          className={`payment-mode-card ${selected ? "selected" : ""}`}
+                          onClick={() => form.setValue("paymentMode", mode.value, { shouldValidate: true })}
+                        >
+                          <Icon aria-hidden="true" />
+                          <strong>{mode.title}</strong>
+                          <span>{mode.detail}</span>
+                          {selected ? <CheckCircle2 aria-hidden="true" /> : null}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               ) : null}
               {step === 3 ? (
                 <div className="stack">
-                  <h3>Review</h3>
-                  <p>This review step is now schema-backed and ready to hand off to the auth and payment APIs.</p>
+                  <p className="eyebrow">Review and submit</p>
+                  <h3>Confirm the booking request</h3>
+                  <p>The backend creates the CRM lead, order, project, invoice, payment status, and realtime admin update from this submission.</p>
                   <ul className="detail-list">
                     <li>Selected service: {service.name}</li>
                     <li>Starting price: {service.priceFrom}</li>
                     <li>Expected delivery: {service.delivery}</li>
+                    <li>Payment mode: {paymentModes.find((mode) => mode.value === form.getValues("paymentMode"))?.title}</li>
                     <li>Company: {form.getValues("companyName") || "Not provided yet"}</li>
                     <li>Contact: {form.getValues("contactEmail") || "Not provided yet"}</li>
                     <li>Phone: {form.getValues("contactPhone") || "Not provided yet"}</li>
@@ -253,6 +326,9 @@ export function BookingWizard() {
           ) : null}
         </div>
         <aside className="card booking-summary glass">
+          <div className="booking-summary-image-wrapper">
+            <Image src={service.media.hero} alt="" fill sizes="(max-width: 1024px) 100vw, 720px" style={{ objectFit: "cover" }} />
+          </div>
           <p className="eyebrow">Selected service</p>
           <h3>{service.name}</h3>
           <p>{service.description}</p>

@@ -16,6 +16,12 @@ export class ContentItem {
 
   @Prop({ type: String, trim: true, default: null })
   summary?: string | null;
+
+  @Prop({ type: String, default: null })
+  imageId?: string | null;
+
+  @Prop({ type: String, default: null })
+  imageUrl?: string | null;
 }
 
 export const ContentItemSchema = SchemaFactory.createForClass(ContentItem);

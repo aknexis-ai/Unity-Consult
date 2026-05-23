@@ -12,13 +12,13 @@ export class AnalyticsController {
   constructor(private readonly analyticsService: AnalyticsService) {}
 
   @Get("admin")
-  @Roles(UserRole.Admin, UserRole.Staff)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Finance, UserRole.CrmOps, UserRole.Operations)
   getAdminMetrics() {
     return this.analyticsService.getAdminMetrics();
   }
 
   @Get("portal")
-  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Client)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Finance, UserRole.CrmOps, UserRole.Operations, UserRole.Client)
   getPortalMetrics() {
     return this.analyticsService.getPortalMetrics();
   }

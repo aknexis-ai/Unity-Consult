@@ -28,7 +28,7 @@ class SendWhatsappDto {
 
 @Controller("notifications")
 @UseGuards(JwtAccessGuard, RolesGuard)
-@Roles(UserRole.Admin, UserRole.Staff)
+@Roles(UserRole.Admin, UserRole.Staff, UserRole.Support, UserRole.CrmOps, UserRole.Operations)
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 

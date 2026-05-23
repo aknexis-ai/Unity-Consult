@@ -2,15 +2,15 @@ import { AuthGate } from "@/components/auth-gate";
 import { DashboardShell } from "@/components/dashboard-shell";
 
 const navItems = [
-  { href: "/portal", label: "Dashboard" },
-  { href: "/portal/projects", label: "Projects" },
-  { href: "/portal/documents", label: "Documents" },
-  { href: "/portal/invoices", label: "Invoices" },
-  { href: "/portal/payments", label: "Payments" },
-  { href: "/portal/finance", label: "Finance" },
-  { href: "/portal/messages", label: "Messages" },
-  { href: "/portal/settings", label: "Settings" },
-  { href: "/portal/support", label: "Support" },
+  { href: "/portal", label: "Dashboard", requiredPermission: "dashboard" },
+  { href: "/portal/projects", label: "Projects", requiredPermission: "projects" },
+  { href: "/portal/documents", label: "Documents", requiredPermission: "documents" },
+  { href: "/portal/invoices", label: "Invoices", requiredPermission: "invoices" },
+  { href: "/portal/payments", label: "Payments", requiredPermission: "payments" },
+  { href: "/portal/finance", label: "Finance", requiredPermission: "finance" },
+  { href: "/portal/messages", label: "Messages", requiredPermission: "messages" },
+  { href: "/portal/settings", label: "Settings", requiredPermission: "settings" },
+  { href: "/portal/support", label: "Support", requiredPermission: "support" },
 ];
 
 export default function PortalLayout({ children }: { children: React.ReactNode }) {

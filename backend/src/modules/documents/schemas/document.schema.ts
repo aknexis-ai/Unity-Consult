@@ -1,4 +1,4 @@
-import { HydratedDocument } from "mongoose";
+import { HydratedDocument, Types } from "mongoose";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
 export type DocumentRecordDocument = HydratedDocument<DocumentRecord>;
@@ -39,6 +39,9 @@ export class DocumentRecord {
 
   @Prop({ type: Date, default: Date.now })
   uploadedAt!: Date;
+
+  @Prop({ type: Types.ObjectId, default: null })
+  gridFsId?: Types.ObjectId | null;
 }
 
 export const DocumentRecordSchema = SchemaFactory.createForClass(DocumentRecord);

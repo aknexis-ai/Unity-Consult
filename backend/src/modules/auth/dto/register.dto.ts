@@ -1,6 +1,4 @@
-import { IsEmail, IsEnum, IsOptional, IsString, MinLength } from "class-validator";
-
-import { UserRole } from "../../users/schemas/user.schema";
+import { IsEmail, IsString, MinLength } from "class-validator";
 
 export class RegisterDto {
   @IsString()
@@ -10,15 +8,13 @@ export class RegisterDto {
   @IsEmail()
   email!: string;
 
-  @IsOptional()
   @IsString()
-  phone?: string;
+  @MinLength(5)
+  phone!: string;
 
   @IsString()
   @MinLength(8)
   password!: string;
 
-  @IsOptional()
-  @IsEnum(UserRole)
-  role?: UserRole;
+  // role is restricted from public registration — admins set roles via the admin panel
 }

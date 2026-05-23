@@ -9,4 +9,8 @@ export const createLeadSchema = z.object({
   stage: z.enum(["new", "qualified", "proposal", "won"]).optional(),
   source: z.string().optional(),
   budget: z.string().optional(),
+  budgetRange: z.string().optional(),
+  inquiryType: z.string().optional(),
+  serviceInterest: z.string().optional(),
+  message: z.string().max(2000).optional(),
 });

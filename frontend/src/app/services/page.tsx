@@ -1,6 +1,8 @@
 import { Section } from "@/components/section";
 import { ServiceCard } from "@/components/service-card";
 import { SiteShell } from "@/components/site-shell";
+import { StaggerContainer, StaggerItem, SkeletonReveal } from "@/components/motion-primitives";
+import { CardGridSkeleton } from "@/components/skeleton-system";
 import { services } from "@/lib/services";
 
 export default function ServicesPage() {
@@ -8,14 +10,18 @@ export default function ServicesPage() {
     <SiteShell>
       <Section
         eyebrow="Service catalog"
-        title="All six PRD service categories in one structured catalog"
-        description="This page mirrors the public catalog surface with consistent pricing, delivery, and exploration entry points."
+        title="Six specialised service lines to grow your business"
+        description="From web presence to legal compliance — every service includes clear pricing, delivery timelines, and a structured path from enquiry to completion."
       >
-        <div className="card-grid">
-          {services.map((service) => (
-            <ServiceCard key={service.slug} service={service} />
-          ))}
-        </div>
+        <SkeletonReveal skeleton={<CardGridSkeleton count={6} />} delay={120}>
+          <StaggerContainer className="card-grid" staggerDelay={0.06}>
+            {services.map((service) => (
+              <StaggerItem key={service.slug}>
+                <ServiceCard service={service} />
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        </SkeletonReveal>
       </Section>
     </SiteShell>
   );

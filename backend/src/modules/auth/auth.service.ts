@@ -39,9 +39,9 @@ export class AuthService {
     const user = await this.usersService.create({
       name: input.name,
       email: input.email.toLowerCase(),
-      phone: input.phone ?? null,
+      phone: input.phone,
       passwordHash,
-      role: input.role ?? UserRole.Client,
+      role: UserRole.Client,
     });
 
     const tokens = await this.issueTokens(user);

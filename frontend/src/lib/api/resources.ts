@@ -69,6 +69,7 @@ export const liveApi = {
     serviceName: string;
     priceLabel: string;
     amount?: number;
+    paymentMode?: "full_payment" | "advance_payment" | "milestone_billing" | "recurring_billing";
     projectBrief: string;
     deliveryNotes: string;
     requestedFields?: Record<string, string>;
@@ -97,20 +98,24 @@ export const liveApi = {
     apiClient.post<PortalMessage>("/messages", input).then((response) => response.data),
   team: () => apiClient.get<TeamMember[]>("/team").then((response) => response.data),
   servicesCatalog: () => apiClient.get<ServiceCatalogItem[]>("/services").then((response) => response.data),
-  createServiceCatalog: (input: Partial<ServiceCatalogItem>) =>
+  createServiceCatalog: (input: Partial<ServiceCatalogItem> & Record<string, unknown>) =>
     apiClient.post<ServiceCatalogItem>("/services", input).then((response) => response.data),
-  updateServiceCatalog: (slug: string, input: Partial<ServiceCatalogItem>) =>
+  updateServiceCatalog: (slug: string, input: Partial<ServiceCatalogItem> & Record<string, unknown>) =>
     apiClient.patch<ServiceCatalogItem>(`/services/${slug}`, input).then((response) => response.data),
   deleteServiceCatalog: (slug: string) =>
     apiClient.delete<{ success: boolean }>(`/services/${slug}`).then((response) => response.data),
   content: () => apiClient.get<ContentItem[]>("/content").then((response) => response.data),
-  createContent: (input: Partial<ContentItem>) =>
+  createContent: (input: Partial<ContentItem> & Record<string, unknown>) =>
     apiClient.post<ContentItem>("/content", input).then((response) => response.data),
-  updateContent: (id: string, input: Partial<ContentItem>) =>
+  updateContent: (id: string, input: Partial<ContentItem> & Record<string, unknown>) =>
     apiClient.patch<ContentItem>(`/content/${id}`, input).then((response) => response.data),
   deleteContent: (id: string) =>
     apiClient.delete<{ success: boolean }>(`/content/${id}`).then((response) => response.data),
   providerHealth: () => apiClient.get<Record<string, unknown>>("/health/providers").then((response) => response.data),
+  users: () => apiClient.get<ApiUser[]>("/users").then((response) => response.data),
+  user: (id: string) => apiClient.get<ApiUser>(`/users/${id}`).then((response) => response.data),
+  updateUserPermissions: (id: string, permissions: string[]) =>
+    apiClient.patch<ApiUser>(`/users/${id}/permissions`, { permissions }).then((response) => response.data),
   auditLogs: () => apiClient.get<AuditLog[]>("/audit").then((response) => response.data),
   mySettings: () =>
     apiClient

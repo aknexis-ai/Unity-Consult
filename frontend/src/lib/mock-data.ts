@@ -6,12 +6,12 @@ export const metrics = [
 ];
 
 export const trustSignals = [
-  "SSL secured workflows",
-  "Razorpay-ready billing architecture",
+  "Secure, encrypted data handling",
+  "Flexible payment options with secure processing",
   "4.9/5 client rating benchmark",
   "250+ projects across growth, tech, and compliance",
   "Structured delivery milestones",
-  "Portal + CRM + public web ecosystem",
+  "Client portal with real-time project visibility",
 ];
 
 export const homepagePillars = [

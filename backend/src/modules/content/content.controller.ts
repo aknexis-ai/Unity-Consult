@@ -10,7 +10,7 @@ import { UpdateContentItemDto } from "./dto/update-content-item.dto";
 
 @Controller("content")
 @UseGuards(JwtAccessGuard, RolesGuard)
-@Roles(UserRole.Admin, UserRole.Staff)
+@Roles(UserRole.Admin, UserRole.Staff, UserRole.Content, UserRole.Seo, UserRole.Design)
 export class ContentController {
   constructor(private readonly contentService: ContentService) {}
 

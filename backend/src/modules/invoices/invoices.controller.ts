@@ -13,19 +13,19 @@ export class InvoicesController {
   constructor(private readonly invoicesService: InvoicesService) {}
 
   @Post()
-  @Roles(UserRole.Admin, UserRole.Staff)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Finance)
   create(@Body() body: CreateInvoiceDto) {
     return this.invoicesService.create(body);
   }
 
   @Get()
-  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Client)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Finance, UserRole.Client)
   findAll() {
     return this.invoicesService.findAll();
   }
 
   @Get(":id")
-  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Client)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Finance, UserRole.Client)
   findOne(@Param("id") id: string) {
     return this.invoicesService.findOne(id);
   }

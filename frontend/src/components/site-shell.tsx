@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
-import { ReactNode } from "react";
-import { ArrowRight, LayoutDashboard, PhoneCall } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { ReactNode, useEffect, useState } from "react";
+import { ArrowRight, LayoutDashboard } from "lucide-react";
+import { motion, useScroll, useSpring } from "framer-motion";
 
 import { company } from "@/lib/company";
 import MobileNav from "./mobile-nav";
@@ -16,27 +20,84 @@ const mainLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
+const navItemVariants = {
+  hidden: { opacity: 0, y: -8 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: 0.1 + i * 0.03, duration: 0.4, ease: [0.22, 1, 0.36, 1] as const },
+  }),
+};
+
+function isActive(href: string, pathname: string): boolean {
+  if (href === "/") return pathname === "/";
+  return pathname.startsWith(href);
+}
+
 export function SiteShell({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const [scrolled, setScrolled] = useState(false);
+  const { scrollYProgress } = useScroll();
+  const scaleY = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
+  });
+
   return (
     <div className="site-shell">
-      <header className="topbar">
+      <motion.div className="scroll-progress-bar" style={{ scaleY, transformOrigin: "0% 50%" }} />
+      <motion.header
+        className={`topbar ${scrolled ? "topbar-scrolled" : ""}`}
+        initial={{ y: -80 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] as const }}
+      >
         <div className="container nav-row">
-          <Link href="/" className="brand">
-            <span className="brand-mark">UC</span>
-            <span>
-              <strong>{company.name}</strong>
-              <small>{company.tagline}</small>
-            </span>
-          </Link>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4, delay: 0.05 }}
+          >
+            <Link href="/" className="brand">
+              <motion.span
+                className="brand-mark"
+                whileHover={{ scale: 1.05, rotate: -3 }}
+                transition={{ type: "spring", stiffness: 300, damping: 12 }}
+              >
+                UC
+              </motion.span>
+              <span>
+                <strong>{company.name}</strong>
+                <small>{company.tagline}</small>
+              </span>
+            </Link>
+          </motion.div>
           <MobileNav links={mainLinks} />
           <nav className="nav">
-            {mainLinks.map((link) => (
-              <Link key={link.href} href={link.href}>
-                {link.label}
-              </Link>
+            {mainLinks.map((link, i) => (
+              <motion.div
+                key={link.href}
+                custom={i}
+                variants={navItemVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                <Link
+                  href={link.href}
+                  className={`nav-link${isActive(link.href, pathname) ? " active" : ""}`}
+                >
+                  {link.label}
+                </Link>
+              </motion.div>
             ))}
           </nav>
-          <div className="nav-actions">
+          <motion.div
+            className="nav-actions"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+          >
             <Link href="/portal" className="ghost-button">
               <LayoutDashboard size={16} />
               Portal
@@ -45,40 +106,58 @@ export function SiteShell({ children }: { children: ReactNode }) {
               Book Service
               <ArrowRight size={16} />
             </Link>
-          </div>
+          </motion.div>
         </div>
-      </header>
+      </motion.header>
       <main>{children}</main>
-      <div className="floating-rail">
-        <a href={`mailto:${company.email}`} className="floating-pill">
+      <motion.div
+        className="floating-rail"
+        initial={{ opacity: 0, x: 40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
+      >
+        <motion.a
+          href={`mailto:${company.email}`}
+          className="floating-pill"
+          whileHover={{ x: -4 }}
+          transition={{ type: "spring", stiffness: 300, damping: 15 }}
+        >
           Email
-        </a>
-        <a href={`tel:${company.phone.replace(/\s+/g, "")}`} className="floating-pill">
+        </motion.a>
+        <motion.a
+          href={`tel:${company.phone.replace(/\s+/g, "")}`}
+          className="floating-pill"
+          whileHover={{ x: -4 }}
+          transition={{ type: "spring", stiffness: 300, damping: 15 }}
+        >
           Call
-        </a>
-        <a href="/contact" className="floating-pill">
+        </motion.a>
+        <motion.a
+          href="/contact"
+          className="floating-pill"
+          whileHover={{ x: -4 }}
+          transition={{ type: "spring", stiffness: 300, damping: 15 }}
+        >
           Contact
-        </a>
-      </div>
+        </motion.a>
+      </motion.div>
       <footer className="footer">
         <div className="container footer-grid">
-          <div className="glass">
-            <div className="brand" style={{ marginBottom: "1.5rem" }}>
-              <span className="brand-mark">UC</span>
+          <motion.div
+            className="glass"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-36px 0px" }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] as const }}
+          >
+            <div className="brand" style={{ marginBottom: "0.75rem" }}>
+              <span className="brand-mark" style={{ width: 36, height: 36, fontSize: "0.75rem" }}>UC</span>
               <span>
-                <strong style={{ fontSize: "1.25rem", color: "#fff", display: "block" }}>{company.name}</strong>
-                <small style={{ fontSize: "0.8rem", color: "rgba(255, 255, 255, 0.4)", display: "block", marginTop: "2px" }}>{company.tagline}</small>
+                <strong style={{ fontSize: "1rem", color: "#fff", display: "block" }}>{company.name}</strong>
+                <small style={{ fontSize: "0.7rem", color: "rgba(255, 255, 255, 0.4)", display: "block", marginTop: "1px" }}>{company.tagline}</small>
               </span>
             </div>
-            <p style={{ marginTop: 0 }}>{company.description}</p>
-            <div className="app-badge-row" aria-label="App installation and workspace badges">
-              {company.appBadges.map((badge) => (
-                <span key={badge.label} className="app-badge">
-                  <strong>{badge.label}</strong>
-                  <small>{badge.detail}</small>
-                </span>
-              ))}
-            </div>
+            <p style={{ margin: "0 0 0.65rem", color: "var(--text-muted)", fontSize: "0.8rem", lineHeight: 1.5 }}>{company.description}</p>
             <div className="footer-metrics">
               <div className="metric-item">
                 <span className="metric-number">{company.socialProof.rating}</span>
@@ -93,52 +172,69 @@ export function SiteShell({ children }: { children: ReactNode }) {
                 <span className="metric-label">Clients</span>
               </div>
             </div>
-          </div>
-          <div className="glass">
-            <h4>Contact</h4>
-            <ul className="footer-list">
-              <li>
-                <a href={`mailto:${company.email}`} className="footer-link">
-                  {company.email}
-                </a>
-              </li>
-              <li>
-                <a href={`tel:${company.phone.replace(/\s+/g, "")}`} className="footer-link">
-                  {company.phone}
-                </a>
-              </li>
-              <li>{company.address}</li>
-              <li>{company.hours}</li>
-            </ul>
-          </div>
-          <div className="glass">
-            <h4>Quick actions</h4>
-            <div className="stack">
-              <Link href="/book" className="panel-link">
-                <ArrowRight size={16} />
-                Start a booking
-              </Link>
-              <Link href="/contact" className="panel-link">
-                <PhoneCall size={16} />
-                Contact channels
-              </Link>
-              <Link href="/pricing" className="panel-link">
-                <LayoutDashboard size={16} />
-                Review pricing
-              </Link>
+            <div className="app-badge-row" aria-label="App installation and workspace badges" style={{ marginTop: "0.5rem" }}>
+              {company.appBadges.map((badge) => (
+                <span key={badge.label} className="app-badge">
+                  <strong>{badge.label}</strong>
+                  <small>{badge.detail}</small>
+                </span>
+              ))}
             </div>
-          </div>
-          <div className="glass">
-            <h4>Company</h4>
-            <div className="stack">
-              <Link href="/privacy-policy" className="panel-link">
-                Privacy Policy
-              </Link>
-              <Link href="/terms-of-service" className="panel-link">
-                Terms of Service
-              </Link>
-            </div>
-          </div>
+          </motion.div>
+          {[
+            {
+              title: "Contact",
+              content: (
+                <ul className="footer-list">
+                  <li><a href={`mailto:${company.email}`} className="footer-link">{company.email}</a></li>
+                  <li><a href={`tel:${company.phone.replace(/\s+/g, "")}`} className="footer-link">{company.phone}</a></li>
+                  <li style={{ fontSize: "0.78rem" }}>{company.address}</li>
+                  <li style={{ fontSize: "0.78rem" }}>{company.hours}</li>
+                  <li className="footer-social-row">
+                    <a href="#" className="footer-social-icon" aria-label="LinkedIn">in</a>
+                    <a href="#" className="footer-social-icon" aria-label="Twitter/X">𝕏</a>
+                    <a href="#" className="footer-social-icon" aria-label="Instagram">ig</a>
+                    <a href="#" className="footer-social-icon" aria-label="YouTube">yt</a>
+                  </li>
+                </ul>
+              ),
+            },
+            {
+              title: "Company",
+              content: (
+                <div className="stack">
+                  <Link href="/about" className="panel-link">About us</Link>
+                  <Link href="/portfolio" className="panel-link">Portfolio</Link>
+                  <Link href="/blog" className="panel-link">Blog & insights</Link>
+                  <Link href="/careers" className="panel-link">Careers</Link>
+                  <Link href="/privacy-policy" className="panel-link">Privacy Policy</Link>
+                  <Link href="/terms-of-service" className="panel-link">Terms of Service</Link>
+                  <Link href="/portal" className="panel-link">Client Portal</Link>
+                  <span className="footer-badge-strip">
+                    <span className="badge">PWA ready</span>
+                    <span className="badge">GDPR</span>
+                  </span>
+                </div>
+              ),
+            },
+          ].map((col, i) => (
+            <motion.div
+              key={col.title}
+              className="glass"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-36px 0px" }}
+              transition={{ duration: 0.4, delay: 0.08 + i * 0.08, ease: [0.22, 1, 0.36, 1] as const }}
+            >
+              <h4 style={{ fontSize: "0.85rem", marginBottom: "0.65rem" }}>{col.title}</h4>
+              {col.content}
+            </motion.div>
+          ))}
+        </div>
+        <div className="container footer-bottom">
+          <p>&copy; {new Date().getFullYear()} {company.name}. All rights reserved.</p>
+          <span className="pulse-dot" />
+          <p className="footer-uptime">Operational</p>
         </div>
       </footer>
     </div>

@@ -14,25 +14,25 @@ export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
   @Post()
-  @Roles(UserRole.Admin, UserRole.Staff)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.CrmOps, UserRole.Operations)
   create(@Body() body: CreateProjectDto) {
     return this.projectsService.create(body);
   }
 
   @Get()
-  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Client)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.CrmOps, UserRole.Operations, UserRole.Client)
   findAll() {
     return this.projectsService.findAll();
   }
 
   @Get(":id")
-  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Client)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.CrmOps, UserRole.Operations, UserRole.Client)
   findOne(@Param("id") id: string) {
     return this.projectsService.findOne(id);
   }
 
   @Patch(":id")
-  @Roles(UserRole.Admin, UserRole.Staff)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.CrmOps, UserRole.Operations)
   update(@Param("id") id: string, @Body() body: UpdateProjectDto) {
     return this.projectsService.update(id, body);
   }

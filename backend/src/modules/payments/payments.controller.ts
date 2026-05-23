@@ -18,14 +18,14 @@ export class PaymentsController {
 
   @Post("create-order")
   @UseGuards(JwtAccessGuard, RolesGuard)
-  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Client)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Finance, UserRole.Client)
   createOrder(@Body() body: CreatePaymentOrderDto) {
     return this.paymentsService.createOrder(body);
   }
 
   @Post("verify")
   @UseGuards(JwtAccessGuard, RolesGuard)
-  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Client)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Finance, UserRole.Client)
   verifyPayment(@Body() body: VerifyPaymentDto) {
     return this.paymentsService.verifyPayment(body);
   }
@@ -41,7 +41,7 @@ export class PaymentsController {
 
   @Patch(":id/refund")
   @UseGuards(JwtAccessGuard, RolesGuard)
-  @Roles(UserRole.Admin, UserRole.Staff)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Finance)
   refund(
     @Param("id") id: string,
     @Body() body: RefundPaymentDto,
@@ -53,7 +53,7 @@ export class PaymentsController {
 
   @Get()
   @UseGuards(JwtAccessGuard, RolesGuard)
-  @Roles(UserRole.Admin, UserRole.Staff)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Finance)
   findAll() {
     return this.paymentsService.findAll();
   }

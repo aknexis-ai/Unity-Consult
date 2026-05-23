@@ -13,4 +13,24 @@ export class CreateContentItemDto {
   @IsOptional()
   @IsString()
   summary?: string;
+
+  @IsOptional()
+  @IsString()
+  imageId?: string;
+
+  @IsOptional()
+  @IsString()
+  imageUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  imageData?: string;
+
+  @IsOptional()
+  @IsString()
+  imageMimeType?: string;
+
+  @IsOptional()
+  @IsString()
+  imageName?: string;
 }

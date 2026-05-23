@@ -7,31 +7,26 @@ import { QueryState } from "@/components/query-state";
 import { liveApi } from "@/lib/api/resources";
 import type { DocumentRecord } from "@/lib/api/types";
 
-function readFileAsBase64(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const value = String(reader.result ?? "");
-      resolve(value.includes(",") ? value.split(",")[1] : value);
-    };
-    reader.onerror = () => reject(reader.error ?? new Error("Could not read file."));
-    reader.readAsDataURL(file);
-  });
-}
-
 function resolveDocumentUrl(fileUrl: string) {
   if (fileUrl.startsWith("http")) {
     return fileUrl;
   }
 
-  if (!fileUrl.startsWith("/api/v1")) {
-    return null;
-  }
-
   const apiRoot = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") ?? "http://127.0.0.1:4000";
 
   return `${apiRoot}${fileUrl}`;
+}
+
+function toBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      resolve(result.split(",")[1] ?? "");
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }
 
 export default function PortalDocumentsPage() {
@@ -45,13 +40,15 @@ export default function PortalDocumentsPage() {
         throw new Error("Choose a document before uploading.");
       }
 
+      const base64Data = await toBase64(file);
+
       return liveApi.uploadDocument({
         name: file.name,
         ownerName: "Client upload",
         category: "other",
         description,
         mimeType: file.type || "application/octet-stream",
-        data: await readFileAsBase64(file),
+        data: base64Data,
       });
     },
     onSuccess: async () => {
@@ -88,7 +85,7 @@ export default function PortalDocumentsPage() {
           {uploadMutation.isPending ? "Uploading..." : "Upload document"}
         </button>
         {uploadMutation.error ? <p className="field-error">{uploadMutation.error.message}</p> : null}
-        {uploadMutation.data ? <p>Document uploaded to secure local storage.</p> : null}
+        {uploadMutation.data ? <p>Document uploaded successfully.</p> : null}
       </section>
       <QueryState<DocumentRecord>
         data={query.data}
@@ -112,11 +109,7 @@ export default function PortalDocumentsPage() {
                   {documents.map((item) => (
                     <tr key={item._id}>
                       <td data-label="Name">
-                        {resolveDocumentUrl(item.fileUrl) ? (
-                          <a href={resolveDocumentUrl(item.fileUrl) ?? undefined}>{item.name}</a>
-                        ) : (
-                          item.name
-                        )}
+                        <a href={resolveDocumentUrl(item.fileUrl)}>{item.name}</a>
                       </td>
                       <td data-label="Category">{item.category}</td>
                       <td data-label="Owner">{item.ownerName}</td>

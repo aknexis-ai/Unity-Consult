@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema(
     passwordResetTokenHash: String,
     passwordResetTokenExpiresAt: Date,
     isActive: Boolean,
+    permissions: [String],
     lastLoginAt: Date,
   },
   { timestamps: true, versionKey: false },
@@ -204,10 +205,40 @@ async function main() {
 
   const passwordHash = await bcrypt.hash("Unity@12345", Number(process.env.BCRYPT_SALT_ROUNDS ?? 12));
 
+  const PERMISSION = {
+    DASHBOARD: "dashboard",
+    LEADS: "leads",
+    ORDERS: "orders",
+    SERVICES: "services",
+    CONTENT: "content",
+    FINANCE: "finance",
+    TEAM: "team",
+    SUPPORT: "support",
+    TICKETS: "tickets",
+    AUDIT: "audit",
+    USERS: "users",
+    PERMISSIONS: "permissions",
+    SETTINGS: "settings",
+    MESSAGES: "messages",
+    DOCUMENTS: "documents",
+    PROJECTS: "projects",
+    INVOICES: "invoices",
+    PAYMENTS: "payments",
+  };
+
   await upsertMany(User, "email", [
-    { name: "Admin User", email: "admin@unityconsult.local", phone: "+91 90000 10001", company: "Unity Consult", title: "Platform Owner", passwordHash, role: "admin", emailVerified: true, isActive: true },
-    { name: "Staff User", email: "staff@unityconsult.local", phone: "+91 90000 10002", company: "Unity Consult", title: "Operations Lead", passwordHash, role: "staff", emailVerified: true, isActive: true },
-    { name: "Client User", email: "client@unityconsult.local", phone: "+91 90000 10003", company: "Acme Tech", title: "Founder", passwordHash, role: "client", emailVerified: true, isActive: true },
+    { name: "Super Admin", email: "superadmin@unityconsult.local", phone: "+91 90000 10000", company: "Unity Consult", title: "System Owner", passwordHash, role: "super_admin", emailVerified: true, isActive: true, permissions: Object.values(PERMISSION) },
+    { name: "Admin User", email: "admin@unityconsult.local", phone: "+91 90000 10001", company: "Unity Consult", title: "Platform Owner", passwordHash, role: "admin", emailVerified: true, isActive: true, permissions: Object.values(PERMISSION) },
+    { name: "Staff User", email: "staff@unityconsult.local", phone: "+91 90000 10002", company: "Unity Consult", title: "Operations Lead", passwordHash, role: "staff", emailVerified: true, isActive: true, permissions: [PERMISSION.DASHBOARD, PERMISSION.LEADS, PERMISSION.ORDERS, PERMISSION.SERVICES, PERMISSION.CONTENT, PERMISSION.TICKETS] },
+    { name: "Finance User", email: "finance@unityconsult.local", phone: "+91 90000 10004", company: "Unity Consult", title: "Finance Manager", passwordHash, role: "finance", emailVerified: true, isActive: true, permissions: [PERMISSION.DASHBOARD, PERMISSION.ORDERS, PERMISSION.FINANCE, PERMISSION.INVOICES, PERMISSION.PAYMENTS] },
+    { name: "Support User", email: "support@unityconsult.local", phone: "+91 90000 10005", company: "Unity Consult", title: "Support Lead", passwordHash, role: "support", emailVerified: true, isActive: true, permissions: [PERMISSION.DASHBOARD, PERMISSION.SUPPORT, PERMISSION.TICKETS, PERMISSION.MESSAGES] },
+    { name: "SEO Specialist", email: "seo@unityconsult.local", phone: "+91 90000 10006", company: "Unity Consult", title: "SEO Strategist", passwordHash, role: "seo", emailVerified: true, isActive: true, permissions: [PERMISSION.DASHBOARD, PERMISSION.SERVICES, PERMISSION.CONTENT] },
+    { name: "Design Lead", email: "design@unityconsult.local", phone: "+91 90000 10007", company: "Unity Consult", title: "Design Lead", passwordHash, role: "design", emailVerified: true, isActive: true, permissions: [PERMISSION.DASHBOARD, PERMISSION.SERVICES, PERMISSION.CONTENT] },
+    { name: "Content Manager", email: "content@unityconsult.local", phone: "+91 90000 10008", company: "Unity Consult", title: "Content Manager", passwordHash, role: "content", emailVerified: true, isActive: true, permissions: [PERMISSION.DASHBOARD, PERMISSION.SERVICES, PERMISSION.CONTENT] },
+    { name: "HR Manager", email: "hr@unityconsult.local", phone: "+91 90000 10009", company: "Unity Consult", title: "HR Manager", passwordHash, role: "hr", emailVerified: true, isActive: true, permissions: [PERMISSION.DASHBOARD, PERMISSION.TEAM] },
+    { name: "Operations Manager", email: "operations@unityconsult.local", phone: "+91 90000 10010", company: "Unity Consult", title: "Operations Manager", passwordHash, role: "operations", emailVerified: true, isActive: true, permissions: [PERMISSION.DASHBOARD, PERMISSION.LEADS, PERMISSION.ORDERS] },
+    { name: "CRM Ops Lead", email: "crmops@unityconsult.local", phone: "+91 90000 10011", company: "Unity Consult", title: "CRM Operations Lead", passwordHash, role: "crm_ops", emailVerified: true, isActive: true, permissions: [PERMISSION.DASHBOARD, PERMISSION.LEADS, PERMISSION.ORDERS, PERMISSION.SERVICES] },
+    { name: "Client User", email: "client@unityconsult.local", phone: "+91 90000 10003", company: "Acme Tech", title: "Founder", passwordHash, role: "client", emailVerified: true, isActive: true, permissions: [PERMISSION.DASHBOARD, PERMISSION.PROJECTS, PERMISSION.DOCUMENTS, PERMISSION.INVOICES, PERMISSION.PAYMENTS, PERMISSION.MESSAGES, PERMISSION.SETTINGS, PERMISSION.SUPPORT] },
   ]);
 
   await upsertMany(Lead, "email", [

@@ -38,6 +38,18 @@ export class Lead {
 
   @Prop({ type: String, trim: true, default: null })
   budget?: string | null;
+
+  @Prop({ type: String, trim: true, default: null })
+  budgetRange?: string | null;
+
+  @Prop({ type: String, trim: true, default: null })
+  inquiryType?: string | null;
+
+  @Prop({ type: String, trim: true, default: null })
+  serviceInterest?: string | null;
+
+  @Prop({ type: String, trim: true, default: null })
+  message?: string | null;
 }
 
 export const LeadSchema = SchemaFactory.createForClass(Lead);

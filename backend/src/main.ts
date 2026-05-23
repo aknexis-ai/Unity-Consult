@@ -35,13 +35,17 @@ async function bootstrap() {
   );
   await app.register(fastifyCookie);
 
-  // Support both localhost and 127.0.0.1 for development
-  const allowedOrigins = new Set([appConfig.appOrigin]);
-  if (appConfig.appOrigin.includes("localhost")) {
-    allowedOrigins.add(appConfig.appOrigin.replace("localhost", "127.0.0.1"));
-  } else if (appConfig.appOrigin.includes("127.0.0.1")) {
-    allowedOrigins.add(appConfig.appOrigin.replace("127.0.0.1", "localhost"));
-  }
+  // Support all common dev server addresses (localhost/127.0.0.1 on ports 3000 and 3001)
+  const allowedOrigins = new Set([
+    appConfig.appOrigin,
+    appConfig.appOrigin.replace("localhost", "127.0.0.1"),
+    appConfig.appOrigin.replace(":3000", ":3001"),
+    appConfig.appOrigin.replace("localhost", "127.0.0.1").replace(":3000", ":3001"),
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:3001",
+  ]);
 
   await app.register(fastifyCors, {
     origin: (origin, callback) => {

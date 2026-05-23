@@ -59,7 +59,7 @@ export const appConfig = {
   nodeEnv: env.NODE_ENV ?? "development",
   isProduction: (env.NODE_ENV ?? "development") === "production",
   port: Number(env.PORT ?? 4000),
-  appOrigin: env.APP_ORIGIN ?? "http://127.0.0.1:3000",
+  appOrigin: env.APP_ORIGIN ?? "http://localhost:3000",
   apiPrefix: env.API_PREFIX ?? "api/v1",
   mongodbUri: atlasUri.uri,
   redisUrl: env.REDIS_URL ?? "",

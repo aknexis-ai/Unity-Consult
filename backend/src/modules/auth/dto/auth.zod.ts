@@ -3,9 +3,9 @@ import { z } from "zod";
 export const registerSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
-  phone: z.string().optional(),
+  phone: z.string().min(5, "Phone number is required"),
   password: z.string().min(8),
-  role: z.enum(["admin", "staff", "client"]).optional(),
+  // role is restricted from public registration — admins set roles via the admin panel
 });
 
 export const loginSchema = z.object({

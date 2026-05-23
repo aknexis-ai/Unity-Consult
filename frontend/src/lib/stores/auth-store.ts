@@ -3,6 +3,19 @@
 import { create } from "zustand";
 
 const storageKey = "unity_consult_auth_session";
+export type AuthRole =
+  | "super_admin"
+  | "admin"
+  | "finance"
+  | "support"
+  | "seo"
+  | "design"
+  | "content"
+  | "hr"
+  | "operations"
+  | "crm_ops"
+  | "staff"
+  | "client";
 
 type AuthUser = {
   id: string;
@@ -12,7 +25,8 @@ type AuthUser = {
   company?: string | null;
   title?: string | null;
   avatarUrl?: string | null;
-  role: "admin" | "staff" | "client";
+  role: AuthRole;
+  permissions: string[];
 } | null;
 
 type AuthState = {

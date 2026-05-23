@@ -1,8 +1,10 @@
 import { Body, Controller, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
+import { RequirePermissions } from "../auth/decorators/permissions.decorator";
 import { Roles } from "../auth/decorators/roles.decorator";
 import { JwtAccessGuard } from "../auth/guards/jwt-access.guard";
+import { PermissionsGuard } from "../auth/guards/permissions.guard";
 import { RolesGuard } from "../auth/guards/roles.guard";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
@@ -15,19 +17,19 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @Roles(UserRole.Admin, UserRole.Staff)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Hr)
   findAll() {
     return this.usersService.findAll();
   }
 
   @Get("me")
-  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Client)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Hr, UserRole.Client)
   me(@CurrentUser("sub") userId: string) {
     return this.usersService.findPublicById(userId);
   }
 
   @Get(":id")
-  @Roles(UserRole.Admin, UserRole.Staff)
+  @Roles(UserRole.Admin, UserRole.Staff, UserRole.Hr)
   findOne(@Param("id") id: string) {
     return this.usersService.findPublicById(id);
   }
@@ -48,5 +50,13 @@ export class UsersController {
   @Roles(UserRole.Admin)
   update(@Param("id") id: string, @Body() body: UpdateUserDto) {
     return this.usersService.update(id, body, true);
+  }
+
+  @Patch(":id/permissions")
+  @Roles(UserRole.SuperAdmin)
+  @UseGuards(PermissionsGuard)
+  @RequirePermissions("permissions")
+  updatePermissions(@Param("id") id: string, @Body("permissions") permissions: string[]) {
+    return this.usersService.updatePermissions(id, permissions);
   }
 }

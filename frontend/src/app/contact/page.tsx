@@ -1,116 +1,54 @@
-"use client";
-
-import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
-
-import { Section } from "@/components/section";
+import dynamic from "next/dynamic";
+import Image from "next/image";
+import { PremiumSection, ProofStrip } from "@/components/premium-visuals";
 import { SiteShell } from "@/components/site-shell";
-import { company } from "@/lib/company";
-import { liveApi } from "@/lib/api/resources";
-import { services } from "@/lib/services";
+import { FadeIn, SkeletonReveal } from "@/components/motion-primitives";
+import { CompactHeroSkeleton } from "@/components/skeleton-system";
+
+const ContactFormSection = dynamic(() => import("@/components/contact-form-section").then((m) => m.ContactFormSection), {
+  ssr: true,
+});
 
 export default function ContactPage() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [service, setService] = useState("");
-  const [message, setMessage] = useState("");
-  const [captchaConfirmed, setCaptchaConfirmed] = useState(false);
-  const mutation = useMutation({
-    mutationFn: () =>
-      liveApi.createLead({
-        name,
-        email,
-        phone,
-        service,
-        source: "Contact form",
-        budget: message,
-      }),
-  });
-
-  const canSubmit = name && email && service && message && captchaConfirmed && !mutation.isPending;
-
   return (
     <SiteShell>
-      <Section
-        eyebrow="Contact"
-        title="Lead capture and contact"
-        description="Contact submissions now create live backend leads for the admin CRM."
-      >
-        <div className="split-grid">
-          <article className="card">
-            <h3>Get in touch</h3>
-            <div className="form-grid">
-              <label>
-                Name
-                <input placeholder="Your full name" value={name} onChange={(event) => setName(event.target.value)} />
-              </label>
-              <label>
-                Email
-                <input placeholder="you@company.com" value={email} onChange={(event) => setEmail(event.target.value)} />
-              </label>
-              <label>
-                Phone
-                <input placeholder="+91 98765 43210" value={phone} onChange={(event) => setPhone(event.target.value)} />
-              </label>
-              <label>
-                Service
-                <select value={service} onChange={(event) => setService(event.target.value)}>
-                  <option value="" disabled>
-                    Select a service
-                  </option>
-                  {services.map((item) => (
-                    <option key={item.slug}>{item.name}</option>
-                  ))}
-                </select>
-              </label>
-              <label className="span-2">
-                Message
-                <textarea
-                  placeholder="Tell us what you need, your timeline, and the current blockers."
-                  rows={5}
-                  value={message}
-                  onChange={(event) => setMessage(event.target.value)}
-                />
-              </label>
-            </div>
-            <label className="recaptcha-fallback">
-              <input
-                type="checkbox"
-                checked={captchaConfirmed}
-                onChange={(event) => setCaptchaConfirmed(event.target.checked)}
-              />
-              <span>
-                I confirm this enquiry is genuine. This field is reCAPTCHA-ready and can be replaced by
-                Google reCAPTCHA keys in production.
-              </span>
-            </label>
-            <button type="button" className="primary-button" disabled={!canSubmit} onClick={() => mutation.mutate()}>
-              {mutation.isPending ? "Submitting..." : "Submit enquiry"}
-            </button>
-            {mutation.error ? <p className="field-error">{mutation.error.message}</p> : null}
-            {mutation.data ? <p>Lead created successfully.</p> : null}
-          </article>
-          <article className="card">
-            <h3>Business details</h3>
-            <ul className="detail-list">
-              <li>{company.email}</li>
-              <li>{company.phone}</li>
-              <li>{company.whatsapp}</li>
-              <li>{company.address}</li>
-              <li>{company.hours}</li>
-            </ul>
-            <div className="map-embed" aria-label="Unity Consult office map">
-              <iframe
-                title="Unity Consult office location"
-                src={company.mapEmbedUrl}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
+      <SkeletonReveal skeleton={<CompactHeroSkeleton />} delay={120}>
+        <PremiumSection
+          eyebrow="Contact Unity Consult"
+          title="Start a project, request support, or talk to operations."
+          description="Get in touch with our team for project enquiries, support requests, or general questions. We typically respond within 24 hours."
+        >
+          <FadeIn>
+            <ProofStrip
+              items={[
+                "24h response SLA",
+                "Email / WhatsApp / call support",
+                "CRM-backed lead routing",
+              ]}
+            />
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <div
+              className="visual-frame"
+              style={{ minHeight: "22rem" }}
+            >
+              <Image
+                src="/images/hero-contact.webp"
+                alt="Unity Consult support and operations workspace"
+                fill
+                sizes="(max-width: 1024px) 100vw, 600px"
+                className="visual-frame-image"
+                priority
+                placeholder="blur"
+                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkYPj/n4EBCxg5GRhgpkATYGT4DwWYGBgBABYlBv6P1+NYAAAAAElFTkSuQmCC"
               />
             </div>
-          </article>
-        </div>
-      </Section>
+          </FadeIn>
+          <FadeIn delay={0.2}>
+            <ContactFormSection />
+          </FadeIn>
+        </PremiumSection>
+      </SkeletonReveal>
     </SiteShell>
   );
 }

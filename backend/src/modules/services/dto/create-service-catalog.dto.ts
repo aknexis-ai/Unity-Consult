@@ -1,4 +1,4 @@
-import { IsArray, IsOptional, IsString } from "class-validator";
+import { IsArray, IsObject, IsOptional, IsString } from "class-validator";
 
 export class CreateServiceCatalogDto {
   @IsString()
@@ -41,4 +41,68 @@ export class CreateServiceCatalogDto {
   @IsOptional()
   @IsString()
   status?: string;
+
+  @IsOptional()
+  @IsString()
+  accent?: string;
+
+  @IsOptional()
+  @IsString()
+  proofMetric?: string;
+
+  @IsOptional()
+  @IsString()
+  proofLabel?: string;
+
+  @IsOptional()
+  @IsArray()
+  pricingTiers?: Array<Record<string, unknown>>;
+
+  @IsOptional()
+  @IsArray()
+  addons?: Array<Record<string, unknown>>;
+
+  @IsOptional()
+  @IsArray()
+  deliverables?: string[];
+
+  @IsOptional()
+  @IsArray()
+  faqs?: Array<Record<string, unknown>>;
+
+  @IsOptional()
+  @IsArray()
+  intakeSchema?: Array<Record<string, unknown>>;
+
+  @IsOptional()
+  @IsObject()
+  media?: Record<string, unknown>;
+
+  @IsOptional()
+  @IsObject()
+  seo?: Record<string, unknown>;
+
+  @IsOptional()
+  @IsString()
+  heroImageData?: string;
+
+  @IsOptional()
+  @IsString()
+  heroImageMimeType?: string;
+
+  @IsOptional()
+  @IsString()
+  heroImageName?: string;
+
+  @IsOptional()
+  @IsString()
+  cardImageData?: string;
+
+  @IsOptional()
+  @IsString()
+  cardImageMimeType?: string;
+
+  @IsOptional()
+  @IsString()
+  cardImageName?: string;
 }
