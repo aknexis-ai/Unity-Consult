@@ -72,7 +72,14 @@ function parsePriceAmount(price: string) {
 export function BookingWizard() {
   const [step, setStep] = useState(0);
   const [serviceSlug, setServiceSlug] = useState(services[0].slug);
+  const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
+  const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+  const service = useMemo(
+    () => services.find((item) => item.slug === serviceSlug) ?? services[0],
+    [serviceSlug],
+  );
+  const priceLabel = selectedPrice ?? service.priceFrom;
   const bookingMutation = useMutation({
     mutationFn: (values: BookingFormValues) =>
       liveApi.createBooking({
@@ -81,12 +88,15 @@ export function BookingWizard() {
         contactPhone: values.contactPhone,
         serviceSlug: service.slug,
         serviceName: service.name,
-        priceLabel: service.priceFrom,
-        amount: parsePriceAmount(service.priceFrom),
+        priceLabel,
+        amount: parsePriceAmount(priceLabel),
         paymentMode: values.paymentMode,
         projectBrief: values.projectBrief,
         deliveryNotes: values.deliveryNotes,
-        requestedFields: values.requestedFields,
+        requestedFields: {
+          ...values.requestedFields,
+          ...(selectedPackage ? { selectedPackage } : {}),
+        },
       }),
   });
   const form = useForm<BookingFormValues>({
@@ -102,15 +112,20 @@ export function BookingWizard() {
     mode: "onBlur",
   });
 
-  const service = useMemo(
-    () => services.find((item) => item.slug === serviceSlug) ?? services[0],
-    [serviceSlug],
-  );
-
   useEffect(() => {
-    const selectedSlug = new URLSearchParams(window.location.search).get("service");
+    const params = new URLSearchParams(window.location.search);
+    const selectedSlug = params.get("service");
+    const packageName = params.get("package");
+    const packagePrice = params.get("price");
+
     if (selectedSlug && services.some((item) => item.slug === selectedSlug)) {
       setServiceSlug(selectedSlug);
+    }
+    if (packageName) {
+      setSelectedPackage(packageName);
+    }
+    if (packagePrice) {
+      setSelectedPrice(packagePrice);
     }
   }, []);
 
@@ -182,7 +197,12 @@ export function BookingWizard() {
                         key={item.slug}
                         type="button"
                         className={`booking-service-card ${item.slug === service.slug ? "selected" : ""}`}
-                        onClick={() => setServiceSlug(item.slug)}
+                        style={{ ["--svc-base" as string]: item.accent } as React.CSSProperties}
+                        onClick={() => {
+                          setServiceSlug(item.slug);
+                          setSelectedPackage(null);
+                          setSelectedPrice(null);
+                        }}
                       >
                         <span className="service-card-check">
                             <CheckCircle2 size={14} />
@@ -296,7 +316,8 @@ export function BookingWizard() {
                   <p>The backend creates the CRM lead, order, project, invoice, payment status, and realtime admin update from this submission.</p>
                   <ul className="detail-list">
                     <li>Selected service: {service.name}</li>
-                    <li>Starting price: {service.priceFrom}</li>
+                    <li>Selected package: {selectedPackage ?? "Service starting package"}</li>
+                    <li>Selected price: {priceLabel}</li>
                     <li>Expected delivery: {service.delivery}</li>
                     <li>Payment mode: {paymentModes.find((mode) => mode.value === form.getValues("paymentMode"))?.title}</li>
                     <li>Company: {form.getValues("companyName") || "Not provided yet"}</li>
@@ -331,6 +352,7 @@ export function BookingWizard() {
           </div>
           <p className="eyebrow">Selected service</p>
           <h3>{service.name}</h3>
+          {selectedPackage ? <p className="selected-package-pill">{selectedPackage} - {priceLabel}</p> : null}
           <p>{service.description}</p>
           <div className="stack-sm">
             <div className="detail-item">

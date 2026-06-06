@@ -5,6 +5,7 @@ import { BadgePercent, CheckCircle2, CreditCard, XCircle } from "lucide-react";
 
 import { PricingTierCard } from "@/components/premium-visuals";
 import type { PricingTier, Service } from "@/lib/services";
+import { useAuthStore } from "@/lib/stores/auth-store";
 
 const comparisonRows = [
   ["Best for", "Launch", "Growth", "Enterprise"],
@@ -31,16 +32,26 @@ function annualizePrice(price: string) {
 export function PricingInteractive({ services }: { services: Service[] }) {
   const [compare, setCompare] = useState(true);
   const [annual, setAnnual] = useState(false);
-  const featuredTiers: PricingTier[] = services.flatMap((service) =>
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const featuredTiers: Array<{ tier: PricingTier; globalRecommended: boolean; serviceSlug: string }> = services.flatMap((service) =>
     service.pricingTiers
       .filter((tier) => tier.highlighted)
       .map((tier) => ({
-        ...tier,
-        name: `${service.name}: ${tier.name}`,
-        price: annual ? annualizePrice(tier.price) : tier.price,
+        tier: {
+          ...tier,
+          name: `${service.name}: ${tier.name}`,
+          price: annual ? annualizePrice(tier.price) : tier.price,
+        },
+        globalRecommended: service.slug === "crm-development",
+        serviceSlug: service.slug,
       })),
   );
   const addons = services.flatMap((service) => service.addons.slice(0, 1).map((addon) => ({ ...addon, service: service.name })));
+  const packageHref = (serviceSlug: string, tier: PricingTier) => {
+    const bookingPath = `/book?service=${encodeURIComponent(serviceSlug)}&package=${encodeURIComponent(tier.name)}&price=${encodeURIComponent(tier.price)}`;
+
+    return accessToken ? bookingPath : `/login?redirect=${encodeURIComponent(bookingPath)}`;
+  };
 
   return (
     <div className="stack-lg">
@@ -56,8 +67,14 @@ export function PricingInteractive({ services }: { services: Service[] }) {
       </div>
 
       <div className="pricing-tier-grid">
-        {featuredTiers.map((tier) => (
-          <PricingTierCard key={tier.name} tier={tier} />
+        {featuredTiers.map(({ tier, globalRecommended, serviceSlug }, i) => (
+          <PricingTierCard
+            key={tier.name}
+            tier={tier}
+            rank={i}
+            showRecommended={globalRecommended}
+            href={packageHref(serviceSlug, tier)}
+          />
         ))}
       </div>
 

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Logo placeholder">
+  <defs>
+    <linearGradient id="uc-logo-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2F9E44"/>
+      <stop offset="1" stop-color="#48CAE4"/>
+    </linearGradient>
+  </defs>
+  <rect x="6" y="6" width="108" height="108" rx="30" fill="url(#uc-logo-grad)"/>
+  <text x="60" y="62" text-anchor="middle" dominant-baseline="central"
+        font-family="'Segoe UI', Arial, sans-serif" font-weight="800"
+        font-size="46" letter-spacing="-2" fill="#ffffff">UC</text>
+</svg>

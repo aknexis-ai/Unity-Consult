@@ -8,6 +8,12 @@ import { services } from "@/lib/services";
 import { StaggerContainer, StaggerItem, SkeletonReveal } from "@/components/motion-primitives";
 import { CardGridSkeleton } from "@/components/skeleton-system";
 
+const CAT_COLORS: Record<string, string> = {
+  "Website Strategy": "#2F9E44",
+  Operations: "#48CAE4",
+  SEO: "#FFD166",
+};
+
 export default function BlogPage() {
   return (
     <SiteShell>
@@ -30,7 +36,7 @@ export default function BlogPage() {
                       style={{ objectFit: "cover" }}
                     />
                   </div>
-                  <div className="card-topline">{post.category}</div>
+                  <div className="card-topline" style={{ color: CAT_COLORS[post.category] ?? "var(--accent)" }}>{post.category}</div>
                   <h3>{post.title}</h3>
                   <p className="mini-meta">
                     {post.author} • {post.readTime}

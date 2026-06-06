@@ -65,7 +65,7 @@ body {
   margin: 0;
   max-width: 100%;
   overflow-x: clip;
-  font-family: "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
   background:
     radial-gradient(circle at top left, rgba(59, 130, 246, 0.22), transparent 30%),
     radial-gradient(circle at top right, rgba(124, 58, 237, 0.18), transparent 24%),
@@ -120,7 +120,7 @@ strong,
 .brand strong,
 .price-block,
 .metric-card strong {
-  font-family: "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
 }
 
 .metric-card strong,
@@ -132,7 +132,7 @@ strong,
 th,
 td,
 small {
-  font-family: "JetBrains Mono", "Plus Jakarta Sans", "Segoe UI", monospace;
+  font-family: "JetBrains Mono", "Inter", "Segoe UI", monospace;
 }
 
 input,
@@ -404,7 +404,10 @@ textarea:focus {
 }
 
 main {
-  padding-top: 0.5rem;
+  padding-top: 5rem; /* clear floating pill navbar */
+}
+section, .au-section, .section {
+  scroll-margin-top: 5.5rem; /* navbar-aware anchor scrolling */
 }
 
 .hero {
@@ -1248,7 +1251,7 @@ th {
   font-weight: 700;
   color: #bfdbfe;
   align-self: flex-start;
-  font-family: "JetBrains Mono", "Plus Jakarta Sans", monospace;
+  font-family: "JetBrains Mono", "Inter", monospace;
   letter-spacing: -0.01em;
   transition: background 0.2s ease, border-color 0.2s ease;
 }
@@ -1764,12 +1767,34 @@ th {
   }
 }
 
-@media (min-width: 1181px) {
+/* ─────────────────────────────────────────────────────────────
+   NAV BREAKPOINT — full horizontal nav stays on desktop/laptop
+   down to 1024px; the hamburger dropdown appears only below 1024px
+   (no menu bar in desktop mode).
+   ───────────────────────────────────────────────────────────── */
+@media (min-width: 1024px) {
+  .nav { display: flex !important; }
+  .nav-actions { display: flex !important; }
   .mobile-nav,
   .mobile-toggle,
   .mobile-menu {
-    display: none;
+    display: none !important;
   }
+}
+@media (min-width: 1024px) and (max-width: 1180px) {
+  /* tighten the bar so all links + actions fit the narrower width */
+  .nav { gap: 0.1rem !important; padding: 0.3rem 0.35rem !important; }
+  .nav a,
+  .nav-link { padding: 0.4rem 0.52rem !important; font-size: 0.8rem !important; }
+  .nav-actions { gap: 0.45rem !important; }
+  .nav-actions .ghost-button,
+  .nav-actions .primary-button { padding: 0.45rem 0.72rem !important; font-size: 0.8rem !important; }
+}
+@media (max-width: 1023px) {
+  .nav { display: none !important; }
+  .nav-actions { display: none !important; }
+  .mobile-nav { display: block !important; margin-left: auto; position: relative; }
+  .mobile-toggle { display: inline-flex !important; }
 }
 
 @media (max-width: 720px) {
@@ -3054,7 +3079,7 @@ a.ghost-button {
   .table-shell td::before {
     content: attr(data-label);
     color: #93c5fd;
-    font-family: "JetBrains Mono", "Plus Jakarta Sans", monospace;
+    font-family: "JetBrains Mono", "Inter", monospace;
     font-size: 0.72rem;
     font-weight: 800;
     letter-spacing: 0.06em;

@@ -6,27 +6,28 @@ import { SiteShell } from "@/components/site-shell";
 import { FadeIn, SkeletonReveal, StaggerContainer, StaggerItem } from "@/components/motion-primitives";
 import { CardGridSkeleton, CompactHeroSkeleton } from "@/components/skeleton-system";
 import { company } from "@/lib/company";
+import { ScrambleText } from "@/components/motion/framer-fx";
 
 const values = [
   {
     title: "Client ownership",
     description: "Every engagement has a named owner, milestone plan, and document trail from day one.",
-    image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&q=80",
+    image: "/images/services/web-development.svg",
   },
   {
     title: "Radical transparency",
     description: "Clients get live visibility into projects, invoices, messages, and support through their portal.",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80",
+    image: "/images/services/crm-development.svg",
   },
   {
     title: "Operational rigour",
     description: "Internal teams manage leads, orders, content, support, and delivery from one unified CRM.",
-    image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=600&q=80",
+    image: "/images/brand/command-center.svg",
   },
   {
     title: "Outcome alignment",
     description: "Every deliverable ties back to a measurable business outcome, not just a task list.",
-    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&q=80",
+    image: "/images/services/seo-services.svg",
   },
 ];
 
@@ -53,7 +54,9 @@ export default function AboutPage() {
           <div className="container stack-lg" style={{ textAlign: "center" }}>
             <FadeIn>
               <p className="eyebrow">About Unity Consult</p>
-              <h1 className="gradient-text">Your strategic partner for digital growth and operational excellence</h1>
+              <h1 className="au-h1" style={{ color: "var(--text)", letterSpacing: "-0.05em" }}>
+                <ScrambleText as="span" text="Your strategic partner for digital growth and operational excellence" trigger="view" />
+              </h1>
             </FadeIn>
             <FadeIn delay={0.15}>
               <p className="hero-copy" style={{ maxWidth: "72ch", margin: "0 auto 2rem" }}>
@@ -85,7 +88,7 @@ export default function AboutPage() {
               <StaggerItem key={value.title}>
                 <article className="card" style={{ textAlign: "center", overflow: "hidden" }}>
                   <div className="visual-frame" style={{ minHeight: "10rem", marginBottom: "1rem", borderRadius: "16px" }}>
-                    <Image src={value.image} alt={value.title} fill sizes="(max-width: 720px) 100vw, 280px" style={{ objectFit: "cover" }} />
+                    <Image src={value.image} alt={value.title} fill sizes="(max-width: 720px) 100vw, 280px" style={{ objectFit: "cover" }} unoptimized />
                   </div>
                   <h3>{value.title}</h3>
                   <p>{value.description}</p>
@@ -123,15 +126,15 @@ export default function AboutPage() {
         <SkeletonReveal skeleton={<div className="split-grid" style={{ gridTemplateColumns: "repeat(2, 1fr)" }}>{[1, 2, 3, 4].map((i) => <div key={i} className="card" style={{ pointerEvents: "none", minHeight: "10rem" }} />)}</div>} delay={120}>
           <StaggerContainer className="split-grid" staggerDelay={0.06}>
             {[
-              { step: "01", title: "Booking and scoping", description: "Clients book through the public wizard. Our team reviews requirements, generates an invoice, and sets up the project workspace.", image: "https://images.unsplash.com/photo-1559526324-4bc350d5be1a?w=600&q=80" },
-              { step: "02", title: "Execution and tracking", description: "Workflows, deliverables, and milestones are tracked live. Clients monitor progress through their portal dashboard.", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80" },
-              { step: "03", title: "Review and delivery", description: "Each milestone moves through review cycles. Documents, invoices, and messages are consolidated in one place.", image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=600&q=80" },
-              { step: "04", title: "Support and retention", description: "Post-delivery, clients access ongoing support, retainer billing, and additional services through the same portal.", image: "https://images.unsplash.com/photo-1552581234-26160f608093?w=600&q=80" },
+              { step: "01", title: "Booking and scoping", description: "Clients book through the public wizard. Our team reviews requirements, generates an invoice, and sets up the project workspace.", image: "/images/services/web-development.svg" },
+              { step: "02", title: "Execution and tracking", description: "Workflows, deliverables, and milestones are tracked live. Clients monitor progress through their portal dashboard.", image: "/images/services/crm-development.svg" },
+              { step: "03", title: "Review and delivery", description: "Each milestone moves through review cycles. Documents, invoices, and messages are consolidated in one place.", image: "/images/services/legal-registration.svg" },
+              { step: "04", title: "Support and retention", description: "Post-delivery, clients access ongoing support, retainer billing, and additional services through the same portal.", image: "/images/brand/command-center.svg" },
             ].map((item) => (
               <StaggerItem key={item.step}>
                 <article className="card" style={{ overflow: "hidden" }}>
                   <div className="visual-frame" style={{ minHeight: "10rem", marginBottom: "1rem", borderRadius: "16px" }}>
-                    <Image src={item.image} alt={item.title} fill sizes="(max-width: 720px) 100vw, 360px" style={{ objectFit: "cover" }} />
+                    <Image src={item.image} alt={item.title} fill sizes="(max-width: 720px) 100vw, 360px" style={{ objectFit: "cover" }} unoptimized />
                   </div>
                   <span className="card-topline">{item.step}</span>
                   <h3>{item.title}</h3>

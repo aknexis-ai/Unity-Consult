@@ -47,7 +47,10 @@ export default function LoginPage() {
     mutationFn: authApi.login,
     onSuccess: (data) => {
       setSession({ accessToken: data.tokens.accessToken, user: data.user });
-      router.push(data.user.role === "client" ? "/portal" : "/admin");
+      const redirect = new URLSearchParams(window.location.search).get("redirect");
+      const safeRedirect = redirect?.startsWith("/") && !redirect.startsWith("//") ? redirect : null;
+
+      router.push(safeRedirect ?? (data.user.role === "client" ? "/portal" : "/admin"));
     },
   });
 

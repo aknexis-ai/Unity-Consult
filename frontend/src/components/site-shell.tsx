@@ -3,11 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
-import { ArrowRight, LayoutDashboard } from "lucide-react";
-import { motion, useScroll, useSpring } from "framer-motion";
+import { ArrowRight, LayoutDashboard, Mail, Phone, MessageCircle } from "lucide-react";
+import { motion, useScroll, useSpring, useMotionValueEvent } from "framer-motion";
 
 import { company } from "@/lib/company";
+import { RotateLink } from "@/components/motion/framer-fx";
 import MobileNav from "./mobile-nav";
+import { FullscreenNav } from "./gsap/fullscreen-nav";
+import { FooterParallax } from "./gsap/footer-parallax";
 
 const mainLinks = [
   { href: "/", label: "Home" },
@@ -37,25 +40,26 @@ function isActive(href: string, pathname: string): boolean {
 export function SiteShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
-  const { scrollYProgress } = useScroll();
+  const { scrollY, scrollYProgress } = useScroll();
   const scaleY = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
     restDelta: 0.001,
   });
+  useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 24));
 
   return (
     <div className="site-shell">
       <motion.div className="scroll-progress-bar" style={{ scaleY, transformOrigin: "0% 50%" }} />
       <motion.header
         className={`topbar ${scrolled ? "topbar-scrolled" : ""}`}
-        initial={{ y: -80 }}
+        initial={false}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] as const }}
       >
         <div className="container nav-row">
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
+            initial={false}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4, delay: 0.05 }}
           >
@@ -80,21 +84,21 @@ export function SiteShell({ children }: { children: ReactNode }) {
                 key={link.href}
                 custom={i}
                 variants={navItemVariants}
-                initial="hidden"
+                initial={false}
                 animate="visible"
               >
                 <Link
                   href={link.href}
                   className={`nav-link${isActive(link.href, pathname) ? " active" : ""}`}
                 >
-                  {link.label}
+                  <RotateLink label={link.label} />
                 </Link>
               </motion.div>
             ))}
           </nav>
           <motion.div
             className="nav-actions"
-            initial={{ opacity: 0, x: 20 }}
+            initial={false}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
           >
@@ -106,41 +110,49 @@ export function SiteShell({ children }: { children: ReactNode }) {
               Book Service
               <ArrowRight size={16} />
             </Link>
+            <FullscreenNav />
           </motion.div>
         </div>
       </motion.header>
       <main>{children}</main>
       <motion.div
         className="floating-rail"
-        initial={{ opacity: 0, x: 40 }}
+        initial={false}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.5 }}
       >
         <motion.a
           href={`mailto:${company.email}`}
-          className="floating-pill"
-          whileHover={{ x: -4 }}
+          className="floating-pill floating-icon"
+          aria-label="Email us"
+          title="Email"
+          whileHover={{ scale: 1.08, x: -3 }}
           transition={{ type: "spring", stiffness: 300, damping: 15 }}
         >
-          Email
+          <Mail size={18} />
         </motion.a>
         <motion.a
           href={`tel:${company.phone.replace(/\s+/g, "")}`}
-          className="floating-pill"
-          whileHover={{ x: -4 }}
+          className="floating-pill floating-icon"
+          aria-label="Call us"
+          title="Call"
+          whileHover={{ scale: 1.08, x: -3 }}
           transition={{ type: "spring", stiffness: 300, damping: 15 }}
         >
-          Call
+          <Phone size={18} />
         </motion.a>
         <motion.a
           href="/contact"
-          className="floating-pill"
-          whileHover={{ x: -4 }}
+          className="floating-pill floating-icon"
+          aria-label="Contact"
+          title="Contact"
+          whileHover={{ scale: 1.08, x: -3 }}
           transition={{ type: "spring", stiffness: 300, damping: 15 }}
         >
-          Contact
+          <MessageCircle size={18} />
         </motion.a>
       </motion.div>
+      <FooterParallax>
       <footer className="footer">
         <div className="container footer-grid">
           <motion.div
@@ -153,8 +165,8 @@ export function SiteShell({ children }: { children: ReactNode }) {
             <div className="brand" style={{ marginBottom: "0.75rem" }}>
               <span className="brand-mark" style={{ width: 36, height: 36, fontSize: "0.75rem" }}>UC</span>
               <span>
-                <strong style={{ fontSize: "1rem", color: "#fff", display: "block" }}>{company.name}</strong>
-                <small style={{ fontSize: "0.7rem", color: "rgba(255, 255, 255, 0.4)", display: "block", marginTop: "1px" }}>{company.tagline}</small>
+                <strong style={{ fontSize: "1rem", color: "var(--text)", display: "block" }}>{company.name}</strong>
+                <small style={{ fontSize: "0.7rem", color: "var(--text-muted)", display: "block", marginTop: "1px" }}>{company.tagline}</small>
               </span>
             </div>
             <p style={{ margin: "0 0 0.65rem", color: "var(--text-muted)", fontSize: "0.8rem", lineHeight: 1.5 }}>{company.description}</p>
@@ -237,6 +249,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
           <p className="footer-uptime">Operational</p>
         </div>
       </footer>
+      </FooterParallax>
     </div>
   );
 }

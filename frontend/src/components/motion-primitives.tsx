@@ -23,8 +23,8 @@ export function FadeIn({
   children,
   delay = 0,
   className = "",
-  y = 28,
-  duration = 0.6,
+  y = 52,
+  duration = 0.8,
   once = true,
 }: {
   children: ReactNode;
@@ -34,19 +34,12 @@ export function FadeIn({
   duration?: number;
   once?: boolean;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once, margin: "-48px 0px" });
-
+  // CSS rise-on-paint → instant first paint (no JS/hydration gate, no SSR opacity:0).
+  void y; void duration; void once;
   return (
-    <motion.div
-      ref={ref}
-      className={className}
-      initial={{ opacity: 0, y }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y }}
-      transition={{ duration, delay, ease: [0.22, 1, 0.36, 1] }}
-    >
+    <div className={`au-rise ${className}`} style={{ animationDelay: `${delay}s` }}>
       {children}
-    </motion.div>
+    </div>
   );
 }
 
@@ -126,11 +119,13 @@ export function StaggerItem({
     <motion.div
       className={className}
       variants={{
-        hidden: { opacity: 0, y: 24 },
+        hidden: { opacity: 0, y: 52, scale: 0.88, filter: "blur(10px)" },
         visible: {
           opacity: 1,
           y: 0,
-          transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+          scale: 1,
+          filter: "blur(0px)",
+          transition: { type: "spring", stiffness: 80, damping: 14, mass: 0.9 },
         },
       }}
     >

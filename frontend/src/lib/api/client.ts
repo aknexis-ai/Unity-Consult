@@ -4,10 +4,30 @@ import axios from "axios";
 
 import { useAuthStore } from "../stores/auth-store";
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1";
+function resolveApiBaseUrl() {
+  const configuredUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1";
+
+  if (typeof window === "undefined") {
+    return configuredUrl;
+  }
+
+  try {
+    const url = new URL(configuredUrl);
+    const localHosts = new Set(["localhost", "127.0.0.1"]);
+
+    if (localHosts.has(window.location.hostname) && localHosts.has(url.hostname)) {
+      url.hostname = window.location.hostname;
+      return url.toString().replace(/\/$/, "");
+    }
+  } catch {
+    return configuredUrl;
+  }
+
+  return configuredUrl;
+}
 
 export const apiClient = axios.create({
-  baseURL,
+  baseURL: resolveApiBaseUrl(),
   withCredentials: true,
   timeout: 15_000,
 });
@@ -33,6 +53,10 @@ async function ensureCsrfToken() {
   if (!token) {
     const response = await apiClient.get<{ csrfToken: string }>("/auth/csrf");
     token = response.data.csrfToken;
+  }
+
+  if (!token) {
+    throw new Error("CSRF token could not be issued.");
   }
 
   return token;

@@ -1,12 +1,21 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 import type { Service } from "@/lib/services";
 
 export function ServiceCard({ service }: { service: Service }) {
   return (
-    <article className="service-visual-card" style={{ "--service-accent": service.accent } as React.CSSProperties}>
+    <motion.article
+      className="service-visual-card service-card-reveal"
+      style={{ "--service-accent": service.accent } as React.CSSProperties}
+      whileHover="hover"
+      initial="rest"
+      animate="rest"
+    >
       <div className="service-card-media">
         <Image
           src={service.media.card}
@@ -15,6 +24,22 @@ export function ServiceCard({ service }: { service: Service }) {
           sizes="(max-width: 720px) 100vw, (max-width: 1024px) 50vw, 33vw"
           style={{ objectFit: "cover" }}
         />
+        <div className="service-card-shutter" aria-hidden>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <motion.span
+              key={index}
+              variants={{
+                rest: { scaleY: 1, opacity: 0 },
+                hover: { scaleY: 0.04, opacity: 1 },
+              }}
+              transition={{ duration: 0.58, ease: [0.22, 1, 0.36, 1], delay: index * 0.035 }}
+            />
+          ))}
+        </div>
+        <div className="service-card-reveal-panel">
+          <strong>{service.proofMetric}</strong>
+          <span>{service.proofLabel}</span>
+        </div>
       </div>
       <div className="service-card-body">
         <div className="card-topline">{service.category}</div>
@@ -34,6 +59,6 @@ export function ServiceCard({ service }: { service: Service }) {
           <ArrowRight size={16} />
         </Link>
       </div>
-    </article>
+    </motion.article>
   );
 }

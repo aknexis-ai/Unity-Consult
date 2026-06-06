@@ -7,6 +7,8 @@ import { SiteShell } from "@/components/site-shell";
 import { StaggerContainer, StaggerItem, FadeIn, SkeletonReveal } from "@/components/motion-primitives";
 import { CardGridSkeleton } from "@/components/skeleton-system";
 import { serviceMap, services } from "@/lib/services";
+import { ServiceWorkflow } from "@/components/service-workflow";
+import { ScrambleText } from "@/components/motion/framer-fx";
 
 export function generateStaticParams() {
   return services.map((service) => ({ slug: service.slug }));
@@ -37,7 +39,7 @@ export default async function ServiceDetailPage({
             <div className="premium-hero-copy">
               <div className="breadcrumb">Home / Services / {service.name}</div>
               <p className="eyebrow">{service.category}</p>
-              <h1>{service.name}</h1>
+              <ScrambleText as="h1" text={service.name} trigger="view" />
               <p className="hero-copy">{service.description}</p>
               <div className="button-row">
                 <Link href={`/book?service=${service.slug}`} className="primary-button">
@@ -75,9 +77,13 @@ export default async function ServiceDetailPage({
       >
         <SkeletonReveal skeleton={<div className="pricing-tier-grid" style={{ display: "grid", gap: "1.5rem", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))" }}>{[1, 2, 3].map((i) => <div key={i} className="card" style={{ pointerEvents: "none", minHeight: "16rem" }} />)}</div>} delay={120}>
           <StaggerContainer className="pricing-tier-grid" staggerDelay={0.08}>
-            {service.pricingTiers.map((tier) => (
+            {service.pricingTiers.map((tier, i) => (
               <StaggerItem key={tier.name}>
-                <PricingTierCard tier={tier} />
+                <PricingTierCard
+                  tier={tier}
+                  rank={i}
+                  href={`/login?redirect=${encodeURIComponent(`/book?service=${service.slug}&package=${tier.name}&price=${tier.price}`)}`}
+                />
               </StaggerItem>
             ))}
           </StaggerContainer>
@@ -118,19 +124,7 @@ export default async function ServiceDetailPage({
       </PremiumSection>
 
       <PremiumSection eyebrow="Workflow" title="Step-by-step delivery flow">
-        <SkeletonReveal skeleton={<div className="timeline">{[1, 2, 3].map((i) => <div key={i} className="timeline-step" style={{ pointerEvents: "none", minHeight: "8rem" }} />)}</div>} delay={120}>
-          <StaggerContainer className="timeline" staggerDelay={0.06}>
-            {service.workflow.map((item, index) => (
-              <StaggerItem key={item}>
-                <article className="timeline-step">
-                  <span>{index + 1}</span>
-                  <h3>{item}</h3>
-                  <p>This phase is tracked through project, message, document, invoice, and support workflows where relevant.</p>
-                </article>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
-        </SkeletonReveal>
+        <ServiceWorkflow steps={service.workflow} />
       </PremiumSection>
 
       <PremiumSection eyebrow="Add-ons" title="Extend the engagement">

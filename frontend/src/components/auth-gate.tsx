@@ -124,7 +124,7 @@ export function AuthGate({
             </p>
             <div className="feature-grid">
               <article className="card inset-card">
-                <div style={{ color: "#a78bfa", marginBottom: "0.85rem", display: "inline-block" }}>
+                <div style={{ color: "var(--accent)", marginBottom: "0.85rem", display: "inline-block" }}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
@@ -145,7 +145,7 @@ export function AuthGate({
                 <p>Monitor your web projects, CRM setups, or branding campaigns through step-by-step deliverable status maps.</p>
               </article>
               <article className="card inset-card">
-                <div style={{ color: "#60a5fa", marginBottom: "0.85rem", display: "inline-block" }}>
+                <div style={{ color: "var(--primary)", marginBottom: "0.85rem", display: "inline-block" }}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
@@ -169,7 +169,7 @@ export function AuthGate({
                 <p>Instantly retrieve signed agreements, regulatory filing proofs, design exports, and final source handovers.</p>
               </article>
               <article className="card inset-card">
-                <div style={{ color: "#a78bfa", marginBottom: "0.85rem", display: "inline-block" }}>
+                <div style={{ color: "var(--accent)", marginBottom: "0.85rem", display: "inline-block" }}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
@@ -190,7 +190,7 @@ export function AuthGate({
                 <p>Symmetrically manage retainer invoices, make fast online payments, and download complete receipts history.</p>
               </article>
               <article className="card inset-card">
-                <div style={{ color: "#60a5fa", marginBottom: "0.85rem", display: "inline-block" }}>
+                <div style={{ color: "var(--primary)", marginBottom: "0.85rem", display: "inline-block" }}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
