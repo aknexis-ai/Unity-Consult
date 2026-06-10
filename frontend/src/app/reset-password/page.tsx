@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Suspense, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { Sparkles } from "lucide-react";
 
 import { SiteShell } from "@/components/site-shell";
 import { FadeIn, SkeletonReveal } from "@/components/motion-primitives";
@@ -33,50 +34,72 @@ function ResetPasswordForm() {
   const mutation = useMutation({ mutationFn: authApi.resetPassword });
 
   return (
-    <SkeletonReveal
-      skeleton={<AuthCardSkeleton />}
-      delay={100}
-    >
-      <FadeIn>
-        <div className="container auth-card card">
-          <h1>Set new password</h1>
-          <form
-            className="stack"
-            onSubmit={form.handleSubmit((values) => {
-              const result = schema.safeParse(values);
-              if (!result.success) {
-                setFormError(result.error.issues[0]?.message ?? "Please check the reset details.");
-                return;
-              }
-              setFormError(null);
-              mutation.mutate(values);
-            })}
-          >
-            <label>
-              Email
-              <input {...form.register("email")} placeholder="you@company.com" />
-            </label>
-            <label>
-              Reset token
-              <input {...form.register("token")} placeholder="Secure token from email" />
-            </label>
-            <label>
-              New password
-              <input {...form.register("password")} type="password" placeholder="At least 8 characters" />
-            </label>
-            {mutation.error ? <p className="field-error">{mutation.error.message}</p> : null}
-            {formError ? <p className="field-error">{formError}</p> : null}
-            {mutation.isSuccess ? (
-              <p className="success-text">
-                Password updated. <Link href="/login">Login now</Link>
-              </p>
-            ) : null}
-            <button className="primary-button" type="submit" disabled={mutation.isPending || mutation.isSuccess}>
-              {mutation.isPending ? "Updating..." : "Update password"}
-            </button>
-          </form>
-        </div>
-      </FadeIn>
+    <SkeletonReveal skeleton={<AuthCardSkeleton />} delay={100}>
+      <div className="auth-card-wrap">
+        <FadeIn delay={0.1}>
+          <div className="auth-card card">
+            <div className="auth-head">
+              <div className="auth-icon">
+                <Sparkles size={22} />
+              </div>
+              <h1 className="auth-title">Set new password</h1>
+              <p className="auth-desc">Enter the secure token from your email and choose a new password.</p>
+            </div>
+            <form
+              className="auth-body"
+              onSubmit={form.handleSubmit((values) => {
+                const result = schema.safeParse(values);
+                if (!result.success) {
+                  setFormError(result.error.issues[0]?.message ?? "Please check the reset details.");
+                  return;
+                }
+                setFormError(null);
+                mutation.mutate(values);
+              })}
+            >
+              <label className="auth-field">
+                <span className="auth-label">Email</span>
+                <input
+                  {...form.register("email")}
+                  type="email"
+                  placeholder="you@company.com"
+                  className="auth-field-input"
+                />
+              </label>
+              <label className="auth-field">
+                <span className="auth-label">Reset token</span>
+                <input
+                  {...form.register("token")}
+                  placeholder="Secure token from email"
+                  className="auth-field-input"
+                />
+              </label>
+              <label className="auth-field">
+                <span className="auth-label">New password</span>
+                <input
+                  {...form.register("password")}
+                  type="password"
+                  placeholder="At least 8 characters"
+                  className="auth-field-input"
+                />
+              </label>
+              {mutation.error ? <p className="auth-err">{mutation.error.message}</p> : null}
+              {formError ? <p className="auth-err">{formError}</p> : null}
+              {mutation.isSuccess ? (
+                <p className="success-text">
+                  Password updated. <Link href="/login">Login now</Link>
+                </p>
+              ) : null}
+              <button className="auth-btn" type="submit" disabled={mutation.isPending || mutation.isSuccess}>
+                {mutation.isPending ? "Updating..." : "Update password"}
+              </button>
+            </form>
+            <div className="auth-foot">
+              <Link href="/login">Back to login</Link>
+            </div>
+          </div>
+        </FadeIn>
+      </div>
     </SkeletonReveal>
   );
 }
@@ -84,8 +107,19 @@ function ResetPasswordForm() {
 export default function ResetPasswordPage() {
   return (
     <SiteShell>
-      <section className="section">
-        <Suspense fallback={<div className="container auth-card card"><AuthCardSkeleton /></div>}>
+      <section className="section auth-section">
+        <div className="auth-bg" />
+        <div className="auth-blob auth-blob--1" />
+        <div className="auth-blob auth-blob--2" />
+        <Suspense
+          fallback={
+            <div className="auth-card-wrap">
+              <div className="auth-card card">
+                <AuthCardSkeleton />
+              </div>
+            </div>
+          }
+        >
           <ResetPasswordForm />
         </Suspense>
       </section>

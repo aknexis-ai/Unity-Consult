@@ -1776,8 +1776,9 @@ html[data-theme="dark"] .floating-rail .floating-pill.floating-icon {
     .booking-grid,
     .portal-gate-wrapper,
     .auth-card-wrap,
-    .dashboard-main > *,
     .au-section > .au-container {
+      /* `.dashboard-main > *` removed: scroll-driven parallax + will-change on the
+         app dashboard wrapper caused continuous GPU work and content drift on scroll. */
       animation: neoSectionParallax both cubic-bezier(0.16, 1, 0.3, 1);
       animation-timeline: view();
       animation-range: entry -8% cover 42%;

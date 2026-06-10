@@ -35,7 +35,7 @@ export default function AdminOrdersPage() {
                 {orders.map((order) => (
                   <tr key={order._id}>
                     <td data-label="Order">
-                      <Link href={`/admin/orders/${order._id}`}>{order._id}</Link>
+                      <Link href={`/admin/orders/${order._id}`}>ORD-{order._id.slice(-6).toUpperCase()}</Link>
                     </td>
                     <td data-label="Client">{order.clientName}</td>
                     <td data-label="Service">{order.serviceName}</td>

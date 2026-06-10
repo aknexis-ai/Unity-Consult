@@ -1558,9 +1558,38 @@ th {
   display: grid;
   place-items: center;
   padding: 2rem;
+  /* Light theme to match the rest of the site (was a dark navy gradient,
+     which looked jarring against the otherwise light pages). */
   background:
-    radial-gradient(circle at top left, rgba(59, 130, 246, 0.18), transparent 28%),
-    linear-gradient(180deg, #081120, #0b1325);
+    radial-gradient(circle at 12% 14%, rgba(47, 158, 68, 0.12), transparent 30%),
+    radial-gradient(circle at 85% 20%, rgba(72, 202, 228, 0.12), transparent 28%),
+    linear-gradient(180deg, #f4ffe9, #eaf7ff);
+}
+
+/* Native file inputs — style the browser-default "Choose File" control so it
+   matches the design system instead of the raw gray button. */
+input[type="file"] {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  max-width: 100%;
+}
+
+input[type="file"]::file-selector-button {
+  margin-right: 0.85rem;
+  padding: 0.5rem 0.95rem;
+  border-radius: 10px;
+  border: 1.5px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  border-color: var(--accent);
 }
 
 .error-panel {
@@ -1997,10 +2026,13 @@ th {
 }
 
 .auth-title {
-  font-size: clamp(1.35rem, 2vw, 1.7rem);
-  font-weight: 700;
+  /* !important overrides the blanket `h1 { font-size: …6rem !important }`
+     rule in aurora.css so the auth card title stays card-sized. */
+  font-size: clamp(1.35rem, 2vw, 1.7rem) !important;
+  font-weight: 700 !important;
   margin: 0;
-  line-height: 1.3;
+  line-height: 1.3 !important;
+  letter-spacing: -0.01em !important;
 }
 
 .auth-desc {
@@ -2120,6 +2152,22 @@ th {
 .auth-btn:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+}
+
+/* Secondary/outline variant — used for non-primary auth actions
+   (e.g. "Send verification code" before the primary "Verify").
+   Uses .auth-btn.auth-btn--ghost (specificity 0,2,0) + !important so it beats
+   aurora.css's `.auth-btn { background: var(--au-grad) !important }`. */
+.auth-btn.auth-btn--ghost {
+  background: transparent !important;
+  color: var(--accent) !important;
+  border: 1.5px solid color-mix(in srgb, var(--accent) 45%, transparent) !important;
+  box-shadow: none !important;
+}
+
+.auth-btn.auth-btn--ghost:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 8%, transparent) !important;
+  box-shadow: none !important;
 }
 
 .auth-btn-load {
@@ -2407,7 +2455,12 @@ a.ghost-button {
 .page-heading {
   text-align: center !important;
   margin-bottom: 1.5rem;
-  font-size: 1.5rem;
+  /* !important overrides the blanket `h1 { … !important }` rule in aurora.css
+     so dashboard page headings stay a sensible size. */
+  font-size: 1.5rem !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.01em !important;
+  font-weight: 700 !important;
 }
 
 /* Topbar section label centered */
@@ -2631,6 +2684,17 @@ a.ghost-button {
 
 .dashboard-shell.sidebar-collapsed .dashboard-sidebar {
   justify-items: center;
+}
+
+/* Sidebar workspace title — !important + higher specificity beats the blanket
+   `h2 { font-size: …4.2rem !important }` rule in aurora.css, which otherwise
+   blows this heading up to ~59px and crowds out the nav. */
+.dashboard-sidebar-copy h2 {
+  font-size: clamp(1.25rem, 1.6vw, 1.55rem) !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.01em !important;
+  font-weight: 800 !important;
+  margin: 0.35rem 0 0.5rem !important;
 }
 
 .dashboard-nav a {

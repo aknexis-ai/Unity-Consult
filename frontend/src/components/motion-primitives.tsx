@@ -89,11 +89,14 @@ export function StaggerContainer({
   staggerDelay?: number;
 }) {
   return (
+    // Reveal on mount (not whileInView). Behind a SkeletonReveal/AnimatePresence
+    // swap, the in-view + `once` trigger could miss and leave children stuck at
+    // opacity:0 — that's why the login/register form fields were intermittently
+    // invisible. Animating on mount guarantees children always reach `visible`.
     <motion.div
       className={className}
       initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-64px 0px" }}
+      animate="visible"
       variants={{
         hidden: {},
         visible: {

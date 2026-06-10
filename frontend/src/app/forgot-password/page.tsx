@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { Sparkles } from "lucide-react";
 
 import { SiteShell } from "@/components/site-shell";
 import { FadeIn, SkeletonReveal } from "@/components/motion-primitives";
@@ -32,49 +33,67 @@ export default function ForgotPasswordPage() {
 
   return (
     <SiteShell>
-      <section className="section">
-        <SkeletonReveal
-          skeleton={<AuthCardSkeleton />}
-          delay={100}
-        >
-          <FadeIn>
-            <div className="container auth-card card">
-            <h1>Reset password</h1>
-            <p>Enter your account email and we will send a secure reset link when email delivery is configured.</p>
-            <form
-              className="stack"
-              onSubmit={form.handleSubmit((values) => {
-                const result = schema.safeParse(values);
-                if (!result.success) {
-                  setFormError(result.error.issues[0]?.message ?? "Please enter a valid email.");
-                  return;
-                }
-                setFormError(null);
-                setDevResetUrl(null);
-                mutation.mutate(values);
-              })}
-            >
-              <label>
-                Email
-                <input {...form.register("email")} placeholder="you@company.com" />
-              </label>
-              {mutation.error ? <p className="field-error">{mutation.error.message}</p> : null}
-              {formError ? <p className="field-error">{formError}</p> : null}
-              {mutation.isSuccess ? <p className="success-text">If the account exists, a reset link has been prepared.</p> : null}
-              {devResetUrl ? (
-                <p className="helper-text">
-                  Local test link: <Link href={devResetUrl}>continue reset</Link>
-                </p>
-              ) : null}
-              <button className="primary-button" type="submit" disabled={mutation.isPending}>
-                {mutation.isPending ? "Preparing..." : "Send reset link"}
-              </button>
-            </form>
-            <p>
-              Remembered it? <Link href="/login">Back to login</Link>
-            </p>
+      <section className="section auth-section">
+        <div className="auth-bg" />
+        <div className="auth-blob auth-blob--1" />
+        <div className="auth-blob auth-blob--2" />
+        <SkeletonReveal skeleton={<AuthCardSkeleton />} delay={100}>
+          <div className="auth-card-wrap">
+            <FadeIn delay={0.1}>
+              <div className="auth-card card">
+                <div className="auth-head">
+                  <div className="auth-icon">
+                    <Sparkles size={22} />
+                  </div>
+                  <h1 className="auth-title">Reset password</h1>
+                  <p className="auth-desc">
+                    Enter your account email and we&apos;ll send a secure reset link when email delivery is configured.
+                  </p>
+                </div>
+                <form
+                  className="auth-body"
+                  onSubmit={form.handleSubmit((values) => {
+                    const result = schema.safeParse(values);
+                    if (!result.success) {
+                      setFormError(result.error.issues[0]?.message ?? "Please enter a valid email.");
+                      return;
+                    }
+                    setFormError(null);
+                    setDevResetUrl(null);
+                    mutation.mutate(values);
+                  })}
+                >
+                  <label className="auth-field">
+                    <span className="auth-label">Email</span>
+                    <input
+                      {...form.register("email")}
+                      type="email"
+                      placeholder="you@company.com"
+                      className="auth-field-input"
+                    />
+                  </label>
+                  {mutation.error ? <p className="auth-err">{mutation.error.message}</p> : null}
+                  {formError ? <p className="auth-err">{formError}</p> : null}
+                  {mutation.isSuccess ? (
+                    <p className="success-text">If the account exists, a reset link has been prepared.</p>
+                  ) : null}
+                  {devResetUrl ? (
+                    <p className="helper-text">
+                      Local test link: <Link href={devResetUrl}>continue reset</Link>
+                    </p>
+                  ) : null}
+                  <button className="auth-btn" type="submit" disabled={mutation.isPending}>
+                    {mutation.isPending ? "Preparing..." : "Send reset link"}
+                  </button>
+                </form>
+                <div className="auth-foot">
+                  <span>Remembered it?</span>
+                  <span className="auth-dot">·</span>
+                  <Link href="/login">Back to login</Link>
+                </div>
+              </div>
+            </FadeIn>
           </div>
-        </FadeIn>
         </SkeletonReveal>
       </section>
     </SiteShell>

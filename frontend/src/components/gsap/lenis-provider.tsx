@@ -4,16 +4,33 @@
  * Osmo: osmo-footer-parallax, osmo-stacking-cards-parallax
  */
 import { useEffect, useRef, createContext, useContext, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger } from "@/lib/gsap/config";
 
 const LenisCtx = createContext<Lenis | null>(null);
 export const useLenis = () => useContext(LenisCtx);
 
+// App-like surfaces (dashboards/portals) must keep NATIVE scrolling so inner
+// panels — e.g. the sidebar menu and scrollable content — scroll on their own.
+// Lenis is a global smooth-scroll that captures the wheel and drives the window,
+// which is why scrolling over the sidebar used to move the whole page instead.
+const NATIVE_SCROLL_PREFIXES = ["/admin", "/portal"];
+
 export function LenisProvider({ children }: { children: ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null);
+  const pathname = usePathname();
+  const useNativeScroll = NATIVE_SCROLL_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
 
   useEffect(() => {
+    // Skip smooth-scroll entirely on dashboard/portal routes.
+    if (useNativeScroll) {
+      lenisRef.current = null;
+      return;
+    }
+
     const lenis = new Lenis({
       duration: 1.35,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -50,7 +67,7 @@ export function LenisProvider({ children }: { children: ReactNode }) {
       lenis.destroy();
       lenisRef.current = null;
     };
-  }, []);
+  }, [useNativeScroll]);
 
   return <LenisCtx.Provider value={lenisRef.current}>{children}</LenisCtx.Provider>;
 }

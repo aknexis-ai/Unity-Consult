@@ -11,10 +11,16 @@ export default function LogoutPage() {
   const clearSession = useAuthStore((state) => state.clearSession);
 
   useEffect(() => {
-    void authApi.logout().finally(() => {
-      clearSession();
-      router.push("/login");
-    });
+    // Swallow logout errors (e.g. "session expired" when already logged out)
+    // so they don't surface as an uncaught console exception. Local session
+    // state is cleared regardless.
+    void authApi
+      .logout()
+      .catch(() => {})
+      .finally(() => {
+        clearSession();
+        router.push("/login");
+      });
   }, [clearSession, router]);
 
   return <div className="auth-state">Logging out...</div>;

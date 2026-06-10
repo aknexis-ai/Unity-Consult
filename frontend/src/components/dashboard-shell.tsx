@@ -95,7 +95,7 @@ export function DashboardShell({
 
   return (
     <div className={`dashboard-shell ${isSidebarOpen ? "sidebar-open" : "sidebar-collapsed"}`}>
-      <aside className="dashboard-sidebar glass">
+      <aside className="dashboard-sidebar glass" data-lenis-prevent>
         <button
           type="button"
           className="dashboard-menu-toggle"
