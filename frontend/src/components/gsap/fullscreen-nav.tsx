@@ -2,8 +2,11 @@
 /**
  * Full-screen navigation — Osmo: osmo-bold-full-screen-navigation
  * Burger → overlay clips in, links stagger up huge. Close = reverse.
+ * Overlay portaled to <body> so transformed ancestors (motion.header) don't
+ * collapse `position: fixed` into a thin strip.
  */
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useGSAP } from "@gsap/react";
@@ -20,11 +23,14 @@ const LINKS = [
 ];
 
 export function FullscreenNav() {
-  const [open, setOpen] = useState(false);
-  const pathname        = usePathname();
-  const overlayRef      = useRef<HTMLDivElement>(null);
-  const listRef         = useRef<HTMLUListElement>(null);
-  const tlRef           = useRef<gsap.core.Timeline | null>(null);
+  const [open, setOpen]       = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const pathname              = usePathname();
+  const overlayRef            = useRef<HTMLDivElement>(null);
+  const listRef               = useRef<HTMLUListElement>(null);
+  const tlRef                 = useRef<gsap.core.Timeline | null>(null);
+
+  useEffect(() => { setMounted(true); }, []);
 
   useGSAP(() => {
     const overlay = overlayRef.current;
@@ -38,7 +44,7 @@ export function FullscreenNav() {
     tlRef.current = gsap.timeline({ paused: true })
       .to(overlay, { clipPath: "inset(0 0 0% 0)", duration: DUR.medium, ease: EASE.page })
       .to(items,   { yPercent: 0, opacity: 1, duration: DUR.slow, ease: EASE.hero, stagger: STAGGER.wide }, "-=0.25");
-  }, { scope: overlayRef });
+  }, { scope: overlayRef, dependencies: [mounted] });
 
   function toggle() {
     const tl = tlRef.current;
@@ -46,6 +52,26 @@ export function FullscreenNav() {
     if (!open) tl.play(); else tl.reverse();
     setOpen((v) => !v);
   }
+
+  const overlay = (
+    <div ref={overlayRef} className="fsn-overlay" aria-hidden={!open} data-lenis-prevent>
+      <button className="fsn-close" onClick={toggle} aria-label="Close menu">✕</button>
+      <ul ref={listRef} className="fsn-list">
+        {LINKS.map((l, i) => (
+          <li key={l.href} className="fsn-item">
+            <Link
+              href={l.href}
+              className={`fsn-link${pathname === l.href ? " fsn-link--active" : ""}`}
+              onClick={toggle}
+            >
+              <span className="fsn-link__num">{String(i + 1).padStart(2, "0")}</span>
+              {l.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 
   return (
     <>
@@ -58,23 +84,7 @@ export function FullscreenNav() {
         <span /><span /><span />
       </button>
 
-      <div ref={overlayRef} className="fsn-overlay" aria-hidden={!open} data-lenis-prevent>
-        <button className="fsn-close" onClick={toggle} aria-label="Close menu">✕</button>
-        <ul ref={listRef} className="fsn-list">
-          {LINKS.map((l, i) => (
-            <li key={l.href} className="fsn-item">
-              <Link
-                href={l.href}
-                className={`fsn-link${pathname === l.href ? " fsn-link--active" : ""}`}
-                onClick={toggle}
-              >
-                <span className="fsn-link__num">{String(i + 1).padStart(2, "0")}</span>
-                {l.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
+      {mounted ? createPortal(overlay, document.body) : null}
     </>
   );
 }

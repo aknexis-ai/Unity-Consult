@@ -1139,6 +1139,57 @@ th {
   transform: translateY(-2px);
 }
 
+/* ── Floating rail — Circle Navigation: trigger + collapsible icons ── */
+.floating-rail--circle {
+  align-items: center;
+  gap: 0.55rem;
+}
+.floating-rail--circle .floating-rail__child {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  display: grid !important;
+  place-items: center;
+}
+.floating-rail__trigger {
+  width: 54px;
+  height: 54px;
+  padding: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  background:
+    radial-gradient(120% 120% at 0% 0%, color-mix(in srgb, var(--accent, #2e9d44) 28%, transparent), transparent 60%),
+    rgba(8, 17, 32, 0.88) !important;
+  color: #fff !important;
+  box-shadow:
+    0 14px 32px rgba(2, 6, 23, 0.4),
+    0 0 0 2px rgba(255, 255, 255, 0.04) !important;
+  transition: background 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.floating-rail__trigger:hover {
+  border-color: color-mix(in srgb, var(--accent, #2e9d44) 60%, rgba(255, 255, 255, 0.14)) !important;
+  box-shadow:
+    0 18px 42px rgba(2, 6, 23, 0.5),
+    0 0 0 2px color-mix(in srgb, var(--accent, #2e9d44) 35%, transparent) !important;
+}
+.floating-rail__trigger.is-open {
+  background:
+    radial-gradient(120% 120% at 0% 0%, color-mix(in srgb, var(--accent, #2e9d44) 55%, transparent), transparent 60%),
+    rgba(8, 17, 32, 0.92) !important;
+}
+.floating-rail__trigger-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  transform-origin: 50% 50%;
+}
+@media (prefers-reduced-motion: reduce) {
+  .floating-rail__trigger-icon { transition: none !important; }
+}
+
 .kanban-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }

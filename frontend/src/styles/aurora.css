@@ -1924,7 +1924,10 @@ html[data-theme="dark"] .floating-rail .floating-pill.floating-icon {
   font-variant-numeric: tabular-nums;
   align-self: flex-start; margin-top: 0.7rem;
 }
-@media (max-width: 768px) { .fsn-burger { display: flex; } }
+/* Show the three-line toggle on desktop, where its parent .nav-actions is
+   visible. Below 1024px .nav-actions is display:none and MobileNav takes over,
+   so the burger only belongs on desktop. */
+@media (min-width: 1024px) { .fsn-burger { display: inline-flex; } }
 
 /* ── Glowing dots grid (osmo-glowing-interactive-dots-grid) ── */
 .au-hero__dots {

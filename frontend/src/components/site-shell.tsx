@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
-import { ArrowRight, LayoutDashboard, Mail, Phone, MessageCircle } from "lucide-react";
-import { motion, useScroll, useSpring, useMotionValueEvent } from "framer-motion";
+import { ArrowRight, LayoutDashboard, Mail, Phone, MessageCircle, Plus } from "lucide-react";
+import { motion, AnimatePresence, useScroll, useSpring, useMotionValueEvent } from "framer-motion";
 
 import { company } from "@/lib/company";
 import { RotateLink } from "@/components/motion/framer-fx";
@@ -40,6 +40,7 @@ function isActive(href: string, pathname: string): boolean {
 export function SiteShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const [railOpen, setRailOpen] = useState(false);
   const { scrollY, scrollYProgress } = useScroll();
   const scaleY = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -116,41 +117,77 @@ export function SiteShell({ children }: { children: ReactNode }) {
       </motion.header>
       <main>{children}</main>
       <motion.div
-        className="floating-rail"
+        className={`floating-rail floating-rail--circle${railOpen ? " is-open" : ""}`}
         initial={false}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.5 }}
       >
-        <motion.a
-          href={`mailto:${company.email}`}
-          className="floating-pill floating-icon"
-          aria-label="Email us"
-          title="Email"
-          whileHover={{ scale: 1.08, x: -3 }}
-          transition={{ type: "spring", stiffness: 300, damping: 15 }}
+        <AnimatePresence>
+          {railOpen && (
+            <>
+              <motion.a
+                key="mail"
+                href={`mailto:${company.email}`}
+                className="floating-pill floating-icon floating-rail__child"
+                aria-label="Email us"
+                title="Email"
+                initial={{ opacity: 0, y: 28, scale: 0.6 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 28, scale: 0.6 }}
+                transition={{ type: "spring", stiffness: 360, damping: 22, delay: 0.18 }}
+                whileHover={{ scale: 1.1, x: -3 }}
+              >
+                <Mail size={18} />
+              </motion.a>
+              <motion.a
+                key="phone"
+                href={`tel:${company.phone.replace(/\s+/g, "")}`}
+                className="floating-pill floating-icon floating-rail__child"
+                aria-label="Call us"
+                title="Call"
+                initial={{ opacity: 0, y: 28, scale: 0.6 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 28, scale: 0.6 }}
+                transition={{ type: "spring", stiffness: 360, damping: 22, delay: 0.1 }}
+                whileHover={{ scale: 1.1, x: -3 }}
+              >
+                <Phone size={18} />
+              </motion.a>
+              <motion.a
+                key="chat"
+                href="/contact"
+                className="floating-pill floating-icon floating-rail__child"
+                aria-label="Contact"
+                title="Contact"
+                initial={{ opacity: 0, y: 28, scale: 0.6 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 28, scale: 0.6 }}
+                transition={{ type: "spring", stiffness: 360, damping: 22, delay: 0.02 }}
+                whileHover={{ scale: 1.1, x: -3 }}
+              >
+                <MessageCircle size={18} />
+              </motion.a>
+            </>
+          )}
+        </AnimatePresence>
+        <motion.button
+          type="button"
+          className={`floating-pill floating-icon floating-rail__trigger${railOpen ? " is-open" : ""}`}
+          aria-label={railOpen ? "Close contact menu" : "Open contact menu"}
+          aria-expanded={railOpen}
+          onClick={() => setRailOpen((v) => !v)}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.94 }}
+          transition={{ type: "spring", stiffness: 320, damping: 18 }}
         >
-          <Mail size={18} />
-        </motion.a>
-        <motion.a
-          href={`tel:${company.phone.replace(/\s+/g, "")}`}
-          className="floating-pill floating-icon"
-          aria-label="Call us"
-          title="Call"
-          whileHover={{ scale: 1.08, x: -3 }}
-          transition={{ type: "spring", stiffness: 300, damping: 15 }}
-        >
-          <Phone size={18} />
-        </motion.a>
-        <motion.a
-          href="/contact"
-          className="floating-pill floating-icon"
-          aria-label="Contact"
-          title="Contact"
-          whileHover={{ scale: 1.08, x: -3 }}
-          transition={{ type: "spring", stiffness: 300, damping: 15 }}
-        >
-          <MessageCircle size={18} />
-        </motion.a>
+          <motion.span
+            className="floating-rail__trigger-icon"
+            animate={{ rotate: railOpen ? 45 : 0 }}
+            transition={{ type: "spring", stiffness: 320, damping: 18 }}
+          >
+            <Plus size={20} />
+          </motion.span>
+        </motion.button>
       </motion.div>
       <FooterParallax>
       <footer className="footer">
